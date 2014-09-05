@@ -56,6 +56,102 @@ end { simbolo = simb_end;
           return T_END;
  }
 
+label { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+type { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+array { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+of { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+procedure { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+function { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+goto { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+if { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+then { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+else { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+while { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+do { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+or { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+and { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+div { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
+* { simbolo = simb_end;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("end  ");
+          return T_END;
+ }
+
 := { simbolo = simb_atribuicao;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" atribuicao  ");
