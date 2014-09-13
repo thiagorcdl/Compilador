@@ -25,7 +25,7 @@
                         geraCodigo(NULL,cod)
                         
 
-int nvars, i, j, rotulo;
+int nvars, i, j, rotulo, len;
 Simbolo *topo, *s, *esq;
 char cod[32],rot[16];
 int desloc = 0;
@@ -40,13 +40,13 @@ int nivel_lexico = -1;
 %token GOTO IF THEN ELSE WHILE DO OR AND NUMERO
 %token NOT DIV MULT MAIS MENOS T_TRUE T_FALSE
 %token MAIOR MENOR MAIOR_IGUAL MENOR_IGUAL DIFF
-%token INT STR CHAR BOOL IGUAL READ WRITE
+%token INT STR CHAR BOOL IGUAL READ WRITE ASPAS
 
 %%
 
 programa    :{  geraCodigo (NULL, "INPP");
                 rotulo = 0;
-                topo = NULL; tipos = NULL; }
+                topo = NULL; tipos = NULL; string = NULL;}
              PROGRAM IDENT 
              ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
              bloco PONTO { geraCodigo (NULL, "PARA"); }
@@ -142,6 +142,7 @@ comando_sem_rotulo : atrib
                    | comando_goto
                    | comando_composto
                    | proc
+                   | io
 ;
 
 atrib:  var {esq = s; }
@@ -202,11 +203,32 @@ read:   READ ABRE_PARENTESES var FECHA_PARENTESES
 
 write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
         {pop(&tipos); geraCodigo(NULL,"IMPR");}
+        | WRITE ABRE_PARENTESES string FECHA_PARENTESES
 ;
 
-proc:       read
+io:       read
         |   write
         |
+;
+
+string: ASPAS {len = 0;} palavras ASPAS
+        {   for(i=0; i < len; i++){
+                j = pop(&string);
+                argCodigo("CRCT",j);
+            }
+            argCodigo("TEXT",len);}
+;
+
+palavras:  palavras {len++; push(&string,(int)' ');} palavra 
+           | palavra 
+;
+
+palavra:    IDENT { len += strlen(token);
+                     for(i=0; i < strlen(token); i++)
+                         push(&string,(int)token[i]);}
+;
+
+proc:
 ;
 
 var: IDENT { s = buscaS(topo,token); 

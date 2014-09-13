@@ -258,6 +258,18 @@ write { simbolo = simb_write;
   return IGUAL;
 }
 
+\"  { simbolo = simb_aspas;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" aspas ");
+  return ASPAS;
+}
+
+\'  { simbolo = simb_aspas;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" aspas ");
+  return ASPAS;
+}
+
 := { simbolo = simb_atribuicao;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" atribuicao  ");

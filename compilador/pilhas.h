@@ -60,4 +60,4 @@ Simbolo* buscaS(Simbolo *, char *);
 Simbolo* criaS();
 void erro(int);
 
-Pilha *tipos, *rotulos;
+Pilha *tipos, *rotulos, *string;
