@@ -1,17 +1,21 @@
-echo "compilando..."
+echo "# Compilando..."
 make -f Makefile
-echo "gerando MEPA..."
+echo "# Gerando MEPA..."
 ./compilador $1 
 if [ $? == 0 ]; then
-    echo "montando..."
-    as mepa.s -o mepa.o
+    arch="32"
+    if [ `uname -m` == "x86_64" ]; then
+        arch=`uname -m`
+    fi
+    echo "# Montando..."
+    as mepa$arch.s -o mepa.o
     if [ $? == 0 ]; then
-        echo "ligando..."
+        echo "# Ligando..."
         ld mepa.o -o mepa -lc -dynamic-linker /lib/ld-linux.so.2  
         if [ $? == 0 ]; then
-            echo "Executando"
+            echo "# Executando."
             ./mepa
         fi
     fi
-    echo "FIM"
+    echo "# FIM"
 fi
