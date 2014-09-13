@@ -1,4 +1,4 @@
-program teste3 (input, output);
+program teste4 (input, output);
 var i,j,k :  integer;
     a,b : boolean;
 begin    

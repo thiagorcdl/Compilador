@@ -2,7 +2,7 @@ program teste5 (input, output);
 var i,j,k :  integer;
     a,b : boolean;
 begin    
-    i := 5;
+    read(i);
     j := 10;
     a := true;
     if (i < j) then
@@ -13,5 +13,6 @@ begin
     end
     else
         j := i + j;
+    write(j * 18);
 end.
 

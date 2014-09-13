@@ -1,3 +1,7 @@
+#define debug(STR) printf("# %s \n", STR); fflush(stdout)
+
+#define TAM_TOKEN 16
+
 /* Erros */
 #define JA_DECL 104
 #define NAO_DECL 103
@@ -12,45 +16,48 @@
 #define TCHAR   4
 #define TSTR    5
 
-enum enum_pass {
+typedef enum enum_pass {
         PVAL=0, PREF=1
-};
+}enum_pass;
 
-enum enum_cat {
+typedef enum enum_cat {
         CVAR, CPROC, CPARAM, CLABEL
-};
+}enum_cat;
 
 typedef struct Var{
-    int tipo = TVOID;
-    enum_pass pass = PVAL;
+    int tipo;
+    enum_pass pass;
     int desloc;
 } Var;
 
 typedef struct Simbolo{
-    char *ident;
+    char ident[TAM_TOKEN];
     enum_cat cat;
     int nivel;
 
     union{
         Var var;
         struct{
-            char *label;
+            char label[TAM_TOKEN];
             int n_param;
             Var *params;
         };
     };
-    Simbolo *abaixo = NULL;
+    struct Simbolo *abaixo;
 } Simbolo;
 
 typedef struct Pilha{
     int val;
-    Pilha *abaixo;
+    struct Pilha *abaixo;
 } Pilha;
 
-void push(Pilha *, int);
-int pop(Pilha *);
+void push(Pilha **, int);
+int pop(Pilha **);
 void cmpT(int);
 Simbolo* insereS(Simbolo *, Simbolo *);
 Simbolo* eliminaS(Simbolo *, int);
 Simbolo* buscaS(Simbolo *, char *);
-void erro(int,char *);
+Simbolo* criaS();
+void erro(int);
+
+Pilha *tipos, *rotulos;

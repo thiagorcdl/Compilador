@@ -8,7 +8,7 @@
 #include "compilador.tab.h"
 
 //#define IMPRIME(STR) {};
-#define IMPRIME(STR) printf("%s    # %s \n", STR, token);
+#define IMPRIME(STR) printf("%s    # %s \n", STR, token); fflush(stdout)
 
 int nl = 1;  
 
@@ -154,17 +154,54 @@ not { simbolo = simb_not;
           return NOT;
  }
 
-true { simbolo = simb_bool;
+boolean { simbolo = simb_bool;
           strncpy (token, yytext, TAM_TOKEN);
-          IMPRIME("true ");
-          return T_BOOL;
+          IMPRIME("boolean ");
+          return BOOL;
  }
 
-false { simbolo = simb_bool;
+true { simbolo = simb_true;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("true ");
+          return T_TRUE;
+ }
+
+false { simbolo = simb_false;
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME("false ");
-          return T_BOOL;
+          return T_FALSE;
  }
+
+integer { simbolo = simb_int;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("integer ");
+          return INT;
+ }
+
+char { simbolo = simb_char;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("character ");
+          return CHAR;
+ }
+
+string { simbolo = simb_str;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("string ");
+          return STR;
+ }
+
+read { simbolo = simb_read;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("le ");
+          return READ;
+ }
+
+write { simbolo = simb_write;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("escreve ");
+          return WRITE;
+ }
+
 
 \* { simbolo = simb_mult;
           strncpy (token, yytext, TAM_TOKEN);
@@ -183,6 +220,43 @@ false { simbolo = simb_bool;
           IMPRIME(" - ");
           return MENOS;
  }
+
+
+\>  { simbolo = simb_maior;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" > ");
+  return MAIOR;
+}
+
+\<  { simbolo = simb_menor;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" < ");
+  return MENOR;
+}
+
+\>=  { simbolo = simb_maior_igual;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" >=");
+  return MAIOR_IGUAL;
+}
+
+\<=  { simbolo = simb_menor_igual;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" <= ");
+  return MENOR_IGUAL;
+}
+
+\<> { simbolo = simb_diff;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" <> ");
+  return DIFF;
+}
+
+\=  { simbolo = simb_igual;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" == ");
+  return IGUAL;
+}
 
 := { simbolo = simb_atribuicao;  
           strncpy (token, yytext, TAM_TOKEN);
@@ -226,6 +300,12 @@ false { simbolo = simb_bool;
           IMPRIME(" fecha_parenteses ");
           return FECHA_PARENTESES;
  }
+
+{numero} { simbolo = simb_numero;
+  strncpy (token, yytext, TAM_TOKEN);
+  IMPRIME(" numero");
+  return NUMERO;
+}
 
 {ident} { simbolo = simb_identificador; 
           strncpy (token, yytext, TAM_TOKEN);

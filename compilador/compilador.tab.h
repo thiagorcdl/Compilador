@@ -71,13 +71,26 @@ extern int yydebug;
     DO = 281,
     OR = 282,
     AND = 283,
-    NOT = 284,
-    DIV = 285,
-    MULT = 286,
-    MAIS = 287,
-    MENOS = 288,
-    T_BOOL = 289,
-    LOWER_THAN_ELSE = 290
+    NUMERO = 284,
+    NOT = 285,
+    DIV = 286,
+    MULT = 287,
+    MAIS = 288,
+    MENOS = 289,
+    T_TRUE = 290,
+    T_FALSE = 291,
+    MAIOR = 292,
+    MENOR = 293,
+    MAIOR_IGUAL = 294,
+    MENOR_IGUAL = 295,
+    DIFF = 296,
+    INT = 297,
+    STR = 298,
+    CHAR = 299,
+    BOOL = 300,
+    IGUAL = 301,
+    READ = 302,
+    WRITE = 303
   };
 #endif
 
