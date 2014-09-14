@@ -40,7 +40,7 @@ int nivel_lexico = -1;
 %token GOTO IF THEN ELSE WHILE DO OR AND NUMERO
 %token NOT DIV MULT MAIS MENOS T_TRUE T_FALSE
 %token MAIOR MENOR MAIOR_IGUAL MENOR_IGUAL DIFF
-%token INT STR CHAR BOOL IGUAL READ WRITE ASPAS
+%token INT STR CHAR BOOL IGUAL READ WRITELN ASPAS
 
 %%
 
@@ -196,36 +196,64 @@ fator:      ABRE_PARENTESES expr FECHA_PARENTESES
 ;
 
 
+io:       read
+        |   writeln
+        |
+;
+
 read:   READ ABRE_PARENTESES var FECHA_PARENTESES
         {   pop(&tipos); geraCodigo(NULL,"LEIT");
             argsCodigo("ARMZ",s->nivel,s->var.desloc);}
 ;
 
-write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
-        {pop(&tipos); geraCodigo(NULL,"IMPR");}
-        | WRITE ABRE_PARENTESES string FECHA_PARENTESES
+writeln:  WRITELN ABRE_PARENTESES writelist FECHA_PARENTESES
+        { argCodigo("CRCT",(int)'\n');
+          argCodigo("TEXT",1);}
 ;
 
-io:       read
-        |   write
-        |
+writelist:   writelist VIRGULA expr {pop(&tipos); geraCodigo(NULL,"IMPR");}
+            | writelist VIRGULA string
+            | string
+            | expr {pop(&tipos); geraCodigo(NULL,"IMPR");}
 ;
 
-string: ASPAS {len = 0;} palavras ASPAS
-        {   for(i=0; i < len; i++){
-                j = pop(&string);
-                argCodigo("CRCT",j);
-            }
-            argCodigo("TEXT",len);}
+string:  {len = 0;} texto 
+        { for(i=0; i < len; i++){
+              j = pop(&string);
+              argCodigo("CRCT",j);
+          }
+          argCodigo("TEXT",len);}
 ;
 
-palavras:  palavras {len++; push(&string,(int)' ');} palavra 
-           | palavra 
-;
 
-palavra:    IDENT { len += strlen(token);
-                     for(i=0; i < strlen(token); i++)
-                         push(&string,(int)token[i]);}
+
+texto:    STR { 
+                    for(i=0; i < strlen(texto); i++){
+                        len++;
+                        if(texto[i]=='\\' && i < strlen(texto)-1){
+                            i++;
+                            if(texto[i] == 'n')
+                                push(&string,(int)'\n');
+                            else if(texto[i] == 't')
+                                push(&string,(int)'\t');
+                            else if(texto[i] == '0'){
+                                push(&string,(int)'\0');
+                                break;
+                            } else if(texto[i] == '\'')
+                                push(&string,(int)'\'');
+                            else if(texto[i] == '\"')
+                                push(&string,(int)'\"');
+                            else if(texto[i] == '\\')
+                                push(&string,(int)'\\');
+                            else {
+                                push(&string,(int)'\\');
+                                i--;
+                            }
+                        } else if (texto[i] == '\"')
+                            len--;
+                        else
+                            push(&string,(int)texto[i]);
+                    }}
 ;
 
 proc:

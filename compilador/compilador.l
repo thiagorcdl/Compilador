@@ -26,7 +26,15 @@ numero [0-9]+
 
 comentario "(*".*"*)"
 
+texto "\""[a-zAZ0-9 \'\\\.\:\=\;\,\|\[\]\{\}\*\+\-\<\>\(\)\%\$\#\@\!]*"\""
+
 %%
+
+{texto} { simbolo  = simb_str;  
+          strncpy (texto, yytext, TAM_TEXT);
+          IMPRIME(texto);
+          return STR;
+}
 
 {pulo_linha} {nl++;} 
 
@@ -196,10 +204,10 @@ read { simbolo = simb_read;
           return READ;
  }
 
-write { simbolo = simb_write;
+writeln { simbolo = simb_write;
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME("escreve ");
-          return WRITE;
+          return WRITELN;
  }
 
 

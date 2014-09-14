@@ -12,8 +12,10 @@ y.tab.c: compilador.y compilador.h
 compilador.o : compilador.h compiladorF.c
 	gcc -c compiladorF.c -o compilador.o
 
-mepa:
+mepa: MEPA
 	gcc mepa.s -m32 -o mepa
 
+MEPA:
+
 clean : 
-	rm -f compilador.tab.* lex.yy.c 
+	rm -f compilador.tab.* lex.yy.c *~ *.o mepa compilador *.output

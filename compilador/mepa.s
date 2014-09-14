@@ -566,13 +566,18 @@ _fim_vars_locais:
 
 .macro TEXT len
    pushl $\len
+    call _str
+.endm
+
+_str:
+   popl %ebx  # ER
 _charloop:
    popl %ecx    # len
    cmp $0, %ecx
    je  _fim_str
-   popl %ebx
+   popl %eax
    pushl %ecx   # contador
-   pushl %ebx   # char
+   pushl %eax   # char
    pushl $strOut
    call printf
    addl $8, %esp
@@ -581,10 +586,8 @@ _charloop:
    pushl %ecx 
    jmp _charloop
 _fim_str:
-   pushl $line
-   call printf
-   addl $4, %esp
-.endm
+   push %ebx
+   ret
 
 # *****************************************************************
 # FIM macros
@@ -598,9 +601,9 @@ _fim_str:
    
 
 entr: .int 0
-strOut: .string "%c"
+strOut: .string "%c\0"
 line: .string "\n"
-strNumOut: .string "%d\n"
+strNumOut: .string "%d\0"
 strNumIn: .string "%d"
 strIniRA: .string "----- strIniRA  --------\n"
 strTR: .string "-----\n"

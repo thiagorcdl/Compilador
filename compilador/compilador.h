@@ -12,6 +12,7 @@
  * ------------------------------------------------------------------- */
 
 #define TAM_TOKEN 16
+#define TAM_TEXT    256
 
 typedef enum simbolos { 
     simb_program, simb_var, simb_begin, simb_end, 
@@ -37,7 +38,7 @@ typedef enum simbolos {
  * ------------------------------------------------------------------- */
 
 extern simbolos simbolo, relacao;
-extern char token[TAM_TOKEN];
+extern char token[TAM_TOKEN], texto[TAM_TEXT];
 extern int nivel_lexico;
 extern int desloc;
 extern int nl;
@@ -45,6 +46,7 @@ extern int nl;
 
 simbolos simbolo, relacao;
 char token[TAM_TOKEN];
+char texto[TAM_TEXT];
 
 
 
