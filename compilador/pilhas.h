@@ -3,9 +3,13 @@
 #define TAM_TOKEN 16
 
 /* Erros */
+#define ATRIB 107
+#define TPARAM 106
+#define NPARAM 105
 #define JA_DECL 104
-#define NAO_DECL 103
-#define INCOMPT 102
+#define VN_DECL 103
+#define PN_DECL 102
+#define INCOMPT 101
 
 
 /* Tipos */
@@ -36,10 +40,12 @@ typedef struct Simbolo{
     int nivel;
 
     union{
+        // Vars e params usam:
         Var var;
+        // Procedures usam:
         struct{
-            char label[TAM_TOKEN];
-            int n_param;
+            int label;
+            int num_params;
             Var *params;
         };
     };
@@ -60,4 +66,4 @@ Simbolo* buscaS(Simbolo *, char *);
 Simbolo* criaS();
 void erro(int);
 
-Pilha *tipos, *rotulos, *string;
+Pilha *tipos, *rotulos, *string, *nvars;

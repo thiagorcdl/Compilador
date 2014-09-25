@@ -1,7 +1,9 @@
-
-// Testar se funciona corretamente o empilhamento de parâmetros
-// passados por valor ou por referência.
-
+/*
+ *  Thiago Roscia Cerdeiro de Lima
+ *  GRR20105251
+ *  trcl10@inf
+ *
+ */
 
 %{
 #include <stdio.h>
@@ -22,14 +24,41 @@
                         geraCodigo(cod,"NADA")
 
 #define desvCodigo(str,r)   sprintf(cod,"%s R%02d",str,r);\
-                        geraCodigo(NULL,cod)
+                            geraCodigo(NULL,cod)
                         
 
-int nvars, i, j, rotulo, len;
-Simbolo *topo, *s, *esq;
+int num_idents, num_params;
+int i, j, rotulo, len;
+Simbolo *tabela, *s, *p, *esq;
 char cod[32],rot[16];
-int desloc = 0;
-int nivel_lexico = -1;
+int desloc = 0, nivel_lexico = 0;
+
+
+void varCodigo(Simbolo *s, int param){
+    if(!param){
+        if(s->var.pass == PREF)
+            argsCodigo("CRVI",s->nivel,s->var.desloc);
+        else
+            argsCodigo("CRVL",s->nivel,s->var.desloc);
+    } else {
+        if(param > p->num_params) 
+            erro(NPARAM);
+        param--;
+        if(s->var.pass == PREF){
+            if(p->params[param] == PREF)
+                argsCodigo("CRVL",s->nivel,s->var.desloc);
+            else
+                argsCodigo("CRVI",s->nivel,s->var.desloc);
+        } else {
+            if(p->params[param] == PREF)
+                argsCodigo("CREN",s->nivel,s->var.desloc);
+            else
+                argsCodigo("CRVL",s->nivel,s->var.desloc);
+        }
+    }
+    return;
+}
+
 %}
 
 %token PROGRAM ABRE_PARENTESES FECHA_PARENTESES 
@@ -44,21 +73,26 @@ int nivel_lexico = -1;
 
 %%
 
-programa    :{  geraCodigo (NULL, "INPP");
-                rotulo = 0;
-                topo = NULL; tipos = NULL; string = NULL;}
-             PROGRAM IDENT 
-             ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
-             bloco PONTO { geraCodigo (NULL, "PARA"); }
+programa:   {   rotulo = 0; nl=1;
+                tabela = NULL; tipos = NULL; string = NULL;
+                geraCodigo(NULL, "INPP");
+                desvCodigo("DSVS",rotulo); push(&rotulos,rotulo++);}
+                PROGRAM IDENT 
+                ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
+                bloco PONTO { geraCodigo (NULL, "PARA"); }
 ;
 
-bloco       : {nivel_lexico++;} parte_declara_vars
-              comando_composto {nivel_lexico--; argCodigo("DMEM",desloc);}
+bloco:      {  }
+                parte_declara_vars
+                comando_composto
+            {   argCodigo("DMEM",pop(&nvars));}
 ;
 
 
-parte_declara_vars: VAR { desloc=0; }
-                    declara_vars { argCodigo("AMEM",desloc);}
+parte_declara_vars:     VAR { desloc=0; }
+                        declara_vars
+                    {   argCodigo("AMEM",desloc);
+                        push(&nvars,desloc);}
                     |
 ;
 
@@ -66,11 +100,11 @@ declara_vars: declara_vars declara_var
             | declara_var 
 ;
 
-declara_var : { nvars=0;} 
+declara_var : { num_idents=0;} 
               lista_id_var DOIS_PONTOS 
-              tipo { s = topo; 
-                     for(i=0; i < nvars; i++){
-                        s->var.tipo = (!strcmp("integer",token)?2:1);
+              tipo { s = tabela; 
+                     for(i=0; i < num_idents; i++){
+                        s->var.tipo = (!strcmp("integer",token)?TINT:TBOOL);
                         s = s->abaixo;
                      }}
               PONTO_E_VIRGULA
@@ -86,13 +120,13 @@ lista_id_var: lista_id_var VIRGULA IDENT
               { s = criaS();
                 s->cat = CVAR;
                 s->var.desloc = desloc++;
-                topo = insereS(topo,s);
-                nvars++;}
+                tabela = insereS(tabela,s);
+                num_idents++;}
             | IDENT {   s = criaS();
                         s->cat = CVAR;
                         s->var.desloc = desloc++;
-                        topo = insereS(topo,s);
-                        nvars++;}
+                        tabela = insereS(tabela,s);
+                        num_idents++;}
 ;
 
 lista_idents: lista_idents VIRGULA IDENT  
@@ -141,7 +175,7 @@ comando_sem_rotulo : atrib
                    | if
                    | comando_goto
                    | comando_composto
-                   | proc
+                   | ch_proc
                    | io
 ;
 
@@ -187,7 +221,7 @@ termo:      NOT fator           {   push(&tipos,TBOOL); cmpT(TBOOL);
 
 
 fator:      ABRE_PARENTESES expr FECHA_PARENTESES
-        |   var     { argsCodigo("CRVL",s->nivel,s->var.desloc);}
+        |   var     { varCodigo(s,0);}
         |   proc
         |   T_TRUE    { geraCodigo(NULL,"CRCT 1"); push(&tipos,TBOOL);}
         |   T_FALSE   { geraCodigo(NULL,"CRCT 0"); push(&tipos,TBOOL);}
@@ -203,7 +237,9 @@ io:       read
 
 read:   READ ABRE_PARENTESES var FECHA_PARENTESES
         {   pop(&tipos); geraCodigo(NULL,"LEIT");
-            argsCodigo("ARMZ",s->nivel,s->var.desloc);}
+            if(s->cat == CVAR)
+                argsCodigo("ARMZ",s->nivel,s->var.desloc);
+            else()}
 ;
 
 writeln:  WRITELN ABRE_PARENTESES writelist FECHA_PARENTESES
@@ -227,40 +263,111 @@ string:  {len = 0;} texto
 
 
 
-texto:    STR { 
-                    for(i=0; i < strlen(texto); i++){
-                        len++;
-                        if(texto[i]=='\\' && i < strlen(texto)-1){
-                            i++;
-                            if(texto[i] == 'n')
-                                push(&string,(int)'\n');
-                            else if(texto[i] == 't')
-                                push(&string,(int)'\t');
-                            else if(texto[i] == '0'){
-                                push(&string,(int)'\0');
-                                break;
-                            } else if(texto[i] == '\'')
-                                push(&string,(int)'\'');
-                            else if(texto[i] == '\"')
-                                push(&string,(int)'\"');
-                            else if(texto[i] == '\\')
-                                push(&string,(int)'\\');
-                            else {
-                                push(&string,(int)'\\');
-                                i--;
-                            }
-                        } else if (texto[i] == '\"')
-                            len--;
-                        else
-                            push(&string,(int)texto[i]);
-                    }}
+texto:    STR { for(i=0; i < strlen(texto); i++){
+                    len++;
+                    if(texto[i]=='\\' && i < strlen(texto)-1){
+                        i++;
+                        if(texto[i] == 'n')
+                            push(&string,(int)'\n');
+                        else if(texto[i] == 't')
+                            push(&string,(int)'\t');
+                        else if(texto[i] == '0'){
+                            push(&string,(int)'\0');
+                            break;
+                        } else if(texto[i] == '\'')
+                            push(&string,(int)'\'');
+                        else if(texto[i] == '\"')
+                            push(&string,(int)'\"');
+                        else if(texto[i] == '\\')
+                            push(&string,(int)'\\');
+                        else {
+                            push(&string,(int)'\\');
+                            i--;
+                        }
+                    } else if (texto[i] == '\"')
+                        len--;
+                    else
+                        push(&string,(int)texto[i]);
+                }}
 ;
 
-proc:
+
+subrotina: decl_proc | decl_func
 ;
 
-var: IDENT { s = buscaS(topo,token); 
-             if ( s == NULL ) erro(NAO_DECL);
+decl_proc:      PROCEDURE {     geraCodigo(rotulo,"NADA");
+                                nivel_lexico++;
+                                p = criaS();
+                                p->cat = CPROC;
+                                p->label = rotulo++;
+                                insereS(tabela,p);
+                                argCodigo("ENPR",nivel_lexico);} 
+                IDENT params 
+                PONTO_E_VIRGULA bloco
+                {   s = tabela;
+                    // Remove local vars, params e procedures de nl maior
+                    while(s->cat != CPROC || s->nivel > nivel_lexico)
+                        s = s->abaixo;
+                    tabela = s;
+                    argCodigo("DMEM",nvars->val);
+                    argsCodigo("RTPR",nivel_lexico,pop(&nvars));
+                    }
+;
+
+
+decl_func:
+;
+
+params_formais:     ABRE_PARENTESES {   desloc = 0; }
+                    decl_params FECHA_PARENTESES
+                    {   s = tabela; 
+                        p->params = malloc(desloc * sizeof(Var));
+                        for(i=0; i < desloc; i++){
+                            s->desloc = -(4 + i);
+                            p->params[i].desloc = s->desloc;
+                            p->params[i].pass = s->pass;
+                            p->params[i].tipo = s->tipo;
+                            s = s->abaixo;
+                        }
+                        p->num_params = desloc;
+                        }
+                |   
+;
+
+decl_params:        decl_params PONTO_E_VIRGULA params
+                |   params
+;
+
+params:         {num_idents = 0;}  VAR lista_id_vars DOIS_PONTOS IDENT
+                { // por ref
+                 s = tabela; 
+                 for(i=0; i < num_idents; i++){
+                    s->cat = CPARAM;
+                    s->var.pass = PREF;
+                    s->var.tipo = (!strcmp("integer",token)?TINT:TBOOL);
+                    s = s->abaixo;
+                 }}
+            |   {num_idents = 0;}  lista_id_vars DOIS_PONTOS IDENT
+                { // por valor
+                 s = tabela; 
+                 for(i=0; i < num_idents; i++){
+                    s->cat = CPARAM;
+                    s->var.pass = PVAL;
+                    s->var.tipo = (!strcmp("integer",token)?TINT:TBOOL);
+                    s = s->abaixo;
+                 }}
+;
+
+ch_proc: IDENT {    p = buscaS(tabela,token);
+                    if ( p == NULL ) erro(PN_DECL);
+                    sprintf(cod,"CHPR R%02d",p->label);
+                    argCodigo(cod,p->nivel); }
+         ABRE_PARENTESES passa_params FECHA_PARENTESES PONTO_E_VIRGULA
+;
+
+var: IDENT { s = buscaS(tabela,token); 
+             if ( s == NULL ) erro(PN_DECL);
+             if (s->cat != CVAR && s->cat != CPARAM) erro(ATRIB);
              push(&tipos,s->var.tipo);}
 ;
 
@@ -272,19 +379,16 @@ main (int argc, char** argv) {
 
    if (argc<2 || argc>2) {
          printf("Usage:\n\t$ %s <file.pas>\n", argv[0]);
-         return(-1);
+         return(100);
       }
 
    fp=fopen (argv[1], "r");
    if (fp == NULL) {
       printf("Usage:\n\t$ %s <file.pas>\n", argv[0]);
-      return(-1);
+      return(100);
    }
-
-
-/* -------------------------------------------------------------------
- *  Inicia a Tabela de Símbolos
- * ------------------------------------------------------------------- */
+    
+    strcpy(codigo,argv[1]);
 
    yyin=fp;
    yyparse();

@@ -74,21 +74,37 @@ Simbolo *criaS(){
     s->nivel = nivel_lexico; 
     s->abaixo = NULL;
     s->var.tipo = TVOID;
+    s->var.pass = PVAL;
     return s;
 }
 
 void erro(int e){
-    char msg[64];
+    char msg[64], cmd[64];
     switch (e){
-        case JA_DECL:   sprintf(msg,"Variável \"%s\" já declarada.",token);
+        case ATRIB:     sprintf(msg,"Recipiente \"%s\" inválido para\
+                                     atribuição.",token);
                         break;
-        case NAO_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
+        case TPARAM:    sprintf(msg,"Tipo do parâmetro \"%s\" não compatível\
+                                    com assinatura de \"%s\".",token,p->ident);
+                        break;
+        case NPARAM:    sprintf(msg,"Número de parâmetros não coincide\
+                                    com assinatura de \"%s\".",p->ident);
+                        break;
+        case JA_DECL:   sprintf(msg,"Identificador \"%s\" já declarado.",token);
+                        break;
+        case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
+                        break;
+        case PN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
                         break;
         case INCOMPT:   sprintf(msg,"Operação com tipos incompatíveis.");
                         break;
     }
-    fprintf(stderr,"# Erro de compilação:\n#\t%s\n# Abortando.\n",msg);
-    exit(1);
+    sprintf(cmd,"tail -%d %s | head -1 | tr -s \" \" | tr -s \"\\t\" >&2",
+            nl,codigo);
+    fprintf(stderr,"\n!# Erro de compilação (linha %d):\n",nl);
+    system(cmd);
+    fprintf(stderr,"\n#\t%s\n# Abortando.\n\n",msg);
+    exit(e);
     return;
 }
 

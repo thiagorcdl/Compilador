@@ -11,7 +11,7 @@
  *
  * ------------------------------------------------------------------- */
 
-#define TAM_TOKEN 16
+#define TAM_TOKEN 32
 #define TAM_TEXT    256
 
 typedef enum simbolos { 
@@ -47,6 +47,7 @@ extern int nl;
 simbolos simbolo, relacao;
 char token[TAM_TOKEN];
 char texto[TAM_TEXT];
+char codigo[TAM_TOKEN];
 
 
 
