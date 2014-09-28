@@ -7,12 +7,21 @@ begin
     a := true;
     if (i < j) then
     begin
+        writeln("1 if");
         if(a) then
-            a := false;
-        i := i + j;
+            writeln("2 if");
+        i := i + j div 2;
+        if (i < j) then
+        begin
+            writeln("3 if");
+            if(not a) then
+                writeln("4 if");
+            i := i + j;
+        end
+        else
+            writeln("3 else");
     end
     else
-        j := i + j;
-    write(j * 18);
+        writeln("1 else");
 end.
 

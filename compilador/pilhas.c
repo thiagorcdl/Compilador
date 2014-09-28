@@ -57,20 +57,23 @@ Simbolo* rmSimb(Simbolo *pilha, int n){
 
 Simbolo* buscaSimb(Simbolo *pilha, char *ident){
     Simbolo *atual;
+    //debug("buscando"); debug(ident);
     if(pilha == NULL) return NULL;
     atual = pilha;
     do{
-        if(!strcmp(atual->ident,ident))
+            //printf("@ %s == %s?\n",atual->ident,ident);
+        if(!strcmp(atual->ident,ident)){
             return atual;
+        }
         atual = atual->abaixo;
     } while(atual != NULL);
     return NULL;
 }
 
-Simbolo *criaSimb(){
+Simbolo *criaSimb(char *ident){
     Simbolo *s;
     s = malloc(sizeof(Simbolo));
-    strcpy(s->ident,token); 
+    strcpy(s->ident,ident); 
     s->nivel = nivel_lexico; 
     s->abaixo = NULL;
     s->var.tipo = TVOID;
@@ -105,20 +108,20 @@ void erro(int e){
         e = 110;
     }
     switch (e){
-        case ATRIB:     sprintf(msg,"Recipiente \"%s\" inválido para\
-                                     atribuição.",token);
+        case ATRIB:     sprintf(msg,"Recipiente \"%s\" inválido para \
+atribuição.",token);
                         break;
-        case TPARAM:    sprintf(msg,"Tipo do parâmetro \"%s\" não compatível\
-                                    com assinatura de \"%s\".",token,p->ident);
+        case TPARAM:    sprintf(msg,"Tipo do parâmetro \"%s\" não compatível \
+com assinatura de \"%s\".",token,p->ident);
                         break;
-        case NPARAM:    sprintf(msg,"Número de parâmetros não coincide\
-                                    com assinatura de \"%s\".",p->ident);
+        case NPARAM:    sprintf(msg,"Número de parâmetros não coincide \
+com assinatura de \"%s\".",p->ident);
                         break;
         case JA_DECL:   sprintf(msg,"Identificador \"%s\" já declarado.",token);
                         break;
-        case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
+        case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token2);
                         break;
-        case PN_DECL:  sprintf(msg,"Procedimento \"%s\" não declarado.",token);
+        case PN_DECL:  sprintf(msg,"Procedimento \"%s\" não declarado.",token2);
                         break;
         case INCOMPT:   sprintf(msg,"Operação com tipos incompatíveis.");
                         break;

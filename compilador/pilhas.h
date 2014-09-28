@@ -1,5 +1,5 @@
 #define debug(STR) printf("@ %s \n", STR); fflush(stdout)
-#define TAM_TOKEN 32
+#define TAM_TOKEN 16
 
 /* Erros */
 #define ATRIB 107
@@ -67,7 +67,7 @@ typedef struct PilhaProc{
 Simbolo* pushSimb(Simbolo *, Simbolo *);
 Simbolo* rmSimb(Simbolo *, int);
 Simbolo* buscaSimb(Simbolo *, char *);
-Simbolo* criaSimb();
+Simbolo* criaSimb(char *ident);
 
 /* Integer (labels, tipos)*/
 void pushInt(PilhaInt **, int);

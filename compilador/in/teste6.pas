@@ -1,8 +1,8 @@
-program teste5 (input, output);
+program teste6 (input, output);
 var i :  integer;
 begin    
-    i:=10;
+    i := 10;
     writeln(i); 
-    writeln("como e\' bom poder ",i," escrever"," tudo:\n\t",458*22);
+    writeln("como e bom poder ",i," escrever"," \'tudo\':\n\t",458*22)
 end.
 
