@@ -52,18 +52,36 @@ typedef struct Simbolo{
     struct Simbolo *abaixo;
 } Simbolo;
 
-typedef struct Pilha{
+typedef struct PilhaIntInt{
     int val;
-    struct Pilha *abaixo;
-} Pilha;
+    struct PilhaIntInt *abaixo;
+} PilhaIntInt;
 
-void push(Pilha **, int);
-int pop(Pilha **);
-void cmpT(int);
-Simbolo* insereS(Simbolo *, Simbolo *);
-Simbolo* eliminaS(Simbolo *, int);
-Simbolo* buscaS(Simbolo *, char *);
-Simbolo* criaS();
+
+typedef struct PilhaProc{
+    Simbolo *proc;
+    struct PilhaInt *abaixo;
+} PilhaProc;
+
+
+/* Simbolos */
+Simbolo* pushSimb(Simbolo *, Simbolo *);
+Simbolo* rmSimb(Simbolo *, int);
+Simbolo* buscaSimb(Simbolo *, char *);
+Simbolo* criaSimb();
+
+/* Integer (labels, tipos)*/
+void pushInt(PilhaInt **, int);
+int popInt(PilhaInt **);
+void cmpTipo(int);
+
+/* Procedures e functions */
+void pushProc(Simbolo* p);
+void popProc();
+
 void erro(int);
 
-Pilha *tipos, *rotulos, *string, *nvars;
+
+Simbolo *tabela, *s, *p, *esq;
+PilhaInt *tipos, *rotulos, *string, *nvars, *nparams;
+PilhaProc *procs;

@@ -4,17 +4,17 @@
 #include "pilhas.h"
 #include "compilador.h"
 
-void push(Pilha **p, int val){
-    Pilha *topo;
-    topo = malloc(sizeof(Pilha));
+void pushInt(PilhaInt **p, int val){
+    PilhaInt *topo;
+    topo = malloc(sizeof(PilhaInt));
     topo->val = val;
     topo->abaixo = (*p);
     *p = topo;
     return;
 }
 
-int pop(Pilha **p){
-    Pilha *tmp;
+int popInt(PilhaInt **p){
+    PilhaInt *tmp;
     int val;
     tmp = (*p);
     val = (*p)->val;
@@ -23,19 +23,19 @@ int pop(Pilha **p){
     return val;
 }
 
-void cmpT(int operador){
+void cmpTipo(int operador){
     int a,b;
-    a = pop(&tipos);
-    b = pop(&tipos);
+    a = popInt(&tipos);
+    b = popInt(&tipos);
     if ((a != b) || (a != operador && operador))
         erro(INCOMPT);
     return;
 }
 
-Simbolo* insereS(Simbolo *pilha, Simbolo *s){
+Simbolo* pushSimb(Simbolo *pilha, Simbolo *s){
     Simbolo *exist;
     if (pilha){
-        exist = buscaS(pilha,s->ident);
+        exist = buscaSimb(pilha,s->ident);
         if(exist && exist->cat == s->cat && exist->nivel == s->nivel)
             erro(JA_DECL);
     }
@@ -43,7 +43,7 @@ Simbolo* insereS(Simbolo *pilha, Simbolo *s){
     return s;
 }
 
-Simbolo* eliminaS(Simbolo *pilha, int n){
+Simbolo* rmSimb(Simbolo *pilha, int n){
     int i;
     Simbolo *topo, *atual;
     atual = pilha;
@@ -55,7 +55,7 @@ Simbolo* eliminaS(Simbolo *pilha, int n){
     return atual;
 }
 
-Simbolo* buscaS(Simbolo *pilha, char *ident){
+Simbolo* buscaSimb(Simbolo *pilha, char *ident){
     Simbolo *atual;
     if(pilha == NULL) return NULL;
     atual = pilha;
@@ -67,7 +67,7 @@ Simbolo* buscaS(Simbolo *pilha, char *ident){
     return NULL;
 }
 
-Simbolo *criaS(){
+Simbolo *criaSimb(){
     Simbolo *s;
     s = malloc(sizeof(Simbolo));
     strcpy(s->ident,token); 
@@ -78,8 +78,32 @@ Simbolo *criaS(){
     return s;
 }
 
+void pushProc(Simbolo* p){
+    PilhaProc *topo;
+    topo = malloc(sizeof(PilhaProc));
+    topo->proc = p;
+    topo->abaixo = procs;
+    procs = topo;
+    return;
+}
+
+Simbolo* popProc(){
+    PilhaProc *tmp;
+    Simbolo* p;
+    tmp = procs;
+    p = tmp->proc;
+    procs = procs->abaixo;
+    free(tmp);
+    return p;
+}
+
 void erro(int e){
     char msg[64], cmd[64];
+    if (e < 100){
+         sprintf(msg,"Parâmetro %d de \"%s\" deve ser endereço válido."
+                    ,e,p->ident);
+        e = 110;
+    }
     switch (e){
         case ATRIB:     sprintf(msg,"Recipiente \"%s\" inválido para\
                                      atribuição.",token);

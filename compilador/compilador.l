@@ -204,10 +204,17 @@ read { simbolo = simb_read;
           return READ;
  }
 
-writeln { simbolo = simb_write;
+writeln { simbolo = simb_writeln;
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME("escreve ");
           return WRITELN;
+ }
+
+
+write { simbolo = simb_write;
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME("escreve ");
+          return WRITE;
  }
 
 
