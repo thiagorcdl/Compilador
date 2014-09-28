@@ -340,7 +340,7 @@ ch_proc: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     if ( p == NULL ) erro(PN_DECL);
                     pushProc(p);
                     pushInt(&nparams,0);}
-         ABRE_PARENTESES passa_ou_nao FECHA_PARENTESES
+         passa_ou_nao
                 {   p = popProc();
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
@@ -349,7 +349,8 @@ ch_proc: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     num_params = 0;}
 ;
 
-passa_ou_nao:    passa_param 
+passa_ou_nao:   ABRE_PARENTESES passa_param  FECHA_PARENTESES
+            |   ABRE_PARENTESES FECHA_PARENTESES
             |
 ;
 

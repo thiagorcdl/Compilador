@@ -1,6 +1,6 @@
 program teste7 (input, output);
 var i :  integer;
-    procedure pinduca();
+    procedure pinduca;
     var a,b : integer;
         procedure zaeli();
         var a : integer;
@@ -17,6 +17,7 @@ var i :  integer;
 begin    
     i := 5;
     writeln("main: ",i);
+    pinduca;
     pinduca()
 end.
 
