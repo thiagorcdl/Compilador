@@ -10,7 +10,7 @@ begin
         while(j > 2) do
             j := j-1;
         i := i + j;
-        write(idiooota);
-    end;
+        write(i)
+    end
 end.
 

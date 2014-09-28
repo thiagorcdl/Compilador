@@ -561,10 +561,10 @@ _fim_vars_locais:
 
 
 # -----------------------------------------------------------------
-#  TEXT
+#  IMPS
 # -----------------------------------------------------------------
 
-.macro TEXT len
+.macro IMPS len
    pushl $\len
     call _str
 .endm
@@ -589,6 +589,17 @@ _fim_str:
    push %ebx
    ret
 
+# -----------------------------------------------------------------
+#  IMPI
+# -----------------------------------------------------------------
+
+.macro IMPI
+   pushl $strNum
+   call printf
+   addl $8, %esp
+.endm
+
+
 # *****************************************************************
 # FIM macros
 # *****************************************************************
@@ -603,7 +614,8 @@ _fim_str:
 entr: .int 0
 strOut: .string "%c\0"
 line: .string "\n"
-strNumOut: .string "%d\0"
+strNum: .string "%d\0"
+strNumOut: .string "%d\n"
 strNumIn: .string "%d"
 strIniRA: .string "----- strIniRA  --------\n"
 strTR: .string "-----\n"

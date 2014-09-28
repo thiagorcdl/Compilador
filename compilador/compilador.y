@@ -390,13 +390,13 @@ write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
 
 writeln:  WRITELN ABRE_PARENTESES writelist FECHA_PARENTESES
         { argCodigo("CRCT ",(int)'\n');
-          argCodigo("TEXT ",1);}
+          argCodigo("IMPS ",1);}
 ;
 
-writelist:   writelist VIRGULA expr {popInt(&tipos); geraCodigo(NULL,"IMPR");}
+writelist:   writelist VIRGULA expr {popInt(&tipos); geraCodigo(NULL,"IMPI");}
             | writelist VIRGULA string
             | string
-            | expr {popInt(&tipos); geraCodigo(NULL,"IMPR");}
+            | expr {popInt(&tipos); geraCodigo(NULL,"IMPI");}
 ;
 
 string:  {len = 0;} texto 
@@ -404,7 +404,7 @@ string:  {len = 0;} texto
               j = popInt(&string);
               argCodigo("CRCT ",j);
           }
-          argCodigo("TEXT ",len);}
+          argCodigo("IMPS ",len);}
 ;
 
 

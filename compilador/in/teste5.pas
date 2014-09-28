@@ -16,12 +16,12 @@ begin
             writeln("3 if");
             if(not a) then
                 writeln("4 if");
-            i := i + j;
+            i := i + j
         end
         else
-            writeln("3 else");
+            writeln("3 else")
     end
     else
-        writeln("1 else");
+        writeln("1 else")
 end.
 
