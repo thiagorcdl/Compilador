@@ -1,6 +1,5 @@
-#define debug(STR) printf("# %s \n", STR); fflush(stdout)
-
-#define TAM_TOKEN 16
+#define debug(STR) printf("@ %s \n", STR); fflush(stdout)
+#define TAM_TOKEN 32
 
 /* Erros */
 #define ATRIB 107
@@ -52,15 +51,15 @@ typedef struct Simbolo{
     struct Simbolo *abaixo;
 } Simbolo;
 
-typedef struct PilhaIntInt{
+typedef struct PilhaInt{
     int val;
-    struct PilhaIntInt *abaixo;
-} PilhaIntInt;
+    struct PilhaInt *abaixo;
+} PilhaInt;
 
 
 typedef struct PilhaProc{
     Simbolo *proc;
-    struct PilhaInt *abaixo;
+    struct PilhaProc *abaixo;
 } PilhaProc;
 
 
@@ -77,7 +76,7 @@ void cmpTipo(int);
 
 /* Procedures e functions */
 void pushProc(Simbolo* p);
-void popProc();
+Simbolo* popProc();
 
 void erro(int);
 

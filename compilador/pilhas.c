@@ -89,12 +89,12 @@ void pushProc(Simbolo* p){
 
 Simbolo* popProc(){
     PilhaProc *tmp;
-    Simbolo* p;
+    Simbolo* proc;
     tmp = procs;
-    p = tmp->proc;
+    proc = tmp->proc;
     procs = procs->abaixo;
     free(tmp);
-    return p;
+    return proc;
 }
 
 void erro(int e){
@@ -118,16 +118,16 @@ void erro(int e){
                         break;
         case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
                         break;
-        case PN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token);
+        case PN_DECL:  sprintf(msg,"Procedimento \"%s\" não declarado.",token);
                         break;
         case INCOMPT:   sprintf(msg,"Operação com tipos incompatíveis.");
                         break;
     }
-    sprintf(cmd,"tail -%d %s | head -1 | tr -s \" \" | tr -s \"\\t\" >&2",
+    sprintf(cmd,"head -%d %s | tail -1 | tr -s \" \" | tr -s \"\\t\" >&2",
             nl,codigo);
-    fprintf(stderr,"\n!# Erro de compilação (linha %d):\n",nl);
+    fprintf(stderr,"\n# Erro de compilação (linha %d):\n>\t",nl);
     system(cmd);
-    fprintf(stderr,"\n#\t%s\n# Abortando.\n\n",msg);
+    fprintf(stderr,"\n# %s\n# Abortando.\n\n",msg);
     exit(e);
     return;
 }

@@ -10,8 +10,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pilhas.h"
 #include "compilador.h"
+#include "pilhas.h"
 
 
 #define argCodigo(str,a)    sprintf(cod,"%s %d",str,a);\
@@ -35,24 +35,27 @@ int desloc = 0, nivel_lexico = 0;
 /* Decide tipo de empilhamento baseado na variavel e param esperado*/
 void varCodigo(Simbolo *s, int param){
     if(!param){
-        if(s->var.pass == PREF)
+        if(s->var.pass == PREF){
             argsCodigo("CRVI",s->nivel,s->var.desloc);
-        else
+        } else {
             argsCodigo("CRVL",s->nivel,s->var.desloc);
+        }
     } else {
         if(param > p->num_params) 
             erro(NPARAM);
         param--;
         if(s->var.pass == PREF){
-            if(p->params[param] == PREF)
+            if(p->params[param].pass == PREF){
                 argsCodigo("CRVL",s->nivel,s->var.desloc);
-            else
+            } else {
                 argsCodigo("CRVI",s->nivel,s->var.desloc);
+            }
         } else {
-            if(p->params[param] == PREF)
+            if(p->params[param].pass == PREF){
                 argsCodigo("CREN",s->nivel,s->var.desloc);
-            else
+            } else {
                 argsCodigo("CRVL",s->nivel,s->var.desloc);
+            }
         }
     }
     return;
@@ -76,17 +79,19 @@ void varCodigo(Simbolo *s, int param){
 /* Inicializa variaveis globais */
 programa:   {   rotulo = 0; nl=1;
                 tabela = NULL; tipos = NULL; string = NULL;
-                geraCodigo(NULL, "INPP");
-                desvCodigo("DSVS",rotulo); pushInt(&rotulos,rotulo++);}
+                geraCodigo(NULL, "INPP");}
                 PROGRAM IDENT 
                 ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
-                bloco PONTO { geraCodigo (NULL, "PARA"); }
+                bloco PONTO {   argCodigo("DMEM",popInt(&nvars));
+                                geraCodigo (NULL, "PARA"); }
 ;
 
 bloco:      {  }
-                parte_declara_vars
-                comando_composto
-            {   argCodigo("DMEM",popInt(&nvars));}
+                parte_declara_vars 
+            {   desvCodigo("DSVS",rotulo); pushInt(&rotulos,rotulo++);}
+                parte_declara_proc
+            {   rotCodigo(popInt(&rotulos));}
+                comando_composto 
 ;
 
 /* DECLARAÇÃO DE VARIÁVEIS */
@@ -174,10 +179,11 @@ numero:     NUMERO DOIS_PONTOS
             |
 ;
 
-comando_goto:   GOTO IDENT
+comando_goto:   GOTO IDENT {sprintf(cod,"DSVS %s",token);
+                            geraCodigo(NULL,cod);}
 ;
 
-comando_sem_rotulo : atrib
+comando_sem_rotulo : atrib 
                    | while
                    | if
                    | comando_goto
@@ -186,7 +192,9 @@ comando_sem_rotulo : atrib
                    | io
 ;
 
-atrib:  var {esq = s; if (s->cat != CVAR && s->cat != CPARAM) erro(ATRIB);}
+atrib:  var { esq = s; 
+              if (s->cat != CVAR && s->cat != CPARAM)
+                  erro(ATRIB);}
         ATRIBUICAO exprs {  cmpTipo(TVOID);
                             argsCodigo("ARMZ",esq->nivel,esq->var.desloc);}
 ;
@@ -229,45 +237,47 @@ termo:      NOT fator           {   pushInt(&tipos,TBOOL); cmpTipo(TBOOL);
 
 
 fator:      ABRE_PARENTESES expr FECHA_PARENTESES
-        |   var     { varCodigo(s,0);}
-        |   proc
+        |   var     {   // Checa se variável está sendo passada para procedure
+                        if (procs == NULL)
+                            varCodigo(s,0);
+                        else
+                            varCodigo(s,nparams->val+1);}
+        |   ch_proc
         |   T_TRUE    { geraCodigo(NULL,"CRCT 1"); pushInt(&tipos,TBOOL);}
         |   T_FALSE   { geraCodigo(NULL,"CRCT 0"); pushInt(&tipos,TBOOL);}
         |   NUMERO  { argCodigo("CRCT",atoi(token));  pushInt(&tipos,TINT);}
         
 ;
 
-var: IDENT { s = buscaSimb(tabela,token); 
-             if ( s == NULL ) erro(PN_DECL);
+var: IDENT { s = buscaSimb(tabela,token);   
+             if ( s == NULL ) erro(VN_DECL);
              pushInt(&tipos,s->var.tipo);}
 ;
 
 /* DECLARAÇÃO DE PROCEDIMENTOS */
-subrotina: decl_proc | decl_func
+parte_declara_proc:    parte_declara_proc decl_proc
+                    |
 ;
 
-decl_proc:      PROCEDURE {     geraCodigo(rotulo,"NADA");
+decl_proc:      PROCEDURE {     rotCodigo(rotulo); 
                                 nivel_lexico++;
                                 // Adiciona procedimento p à tabela
                                 p = criaSimb();
                                 p->cat = CPROC;
                                 p->label = rotulo++;
-                                pushSimb(tabela,p);
+                                tabela = pushSimb(tabela,p);
                                 argCodigo("ENPR",nivel_lexico);} 
-                IDENT params 
+                IDENT params_formais
                 PONTO_E_VIRGULA bloco
                 {   s = tabela;
                     // Remove local vars, params e procedures de nl maior
                     while(s->cat != CPROC || s->nivel > nivel_lexico)
                         s = s->abaixo;
-                    tabela = s;
+                    tabela = s; 
                     argCodigo("DMEM",nvars->val);
                     argsCodigo("RTPR",nivel_lexico,popInt(&nvars)); }
 ;
 
-
-decl_func:
-;
 
 params_formais:     ABRE_PARENTESES {   desloc = 0; }
                     decl_params FECHA_PARENTESES
@@ -275,21 +285,22 @@ params_formais:     ABRE_PARENTESES {   desloc = 0; }
                         p->params = malloc(desloc * sizeof(Var));
                         // Copia params da tabela para a lista do procedimento
                         for(i=0; i < desloc; i++){
-                            s->desloc = -(4 + i);
-                            p->params[i].desloc = s->desloc;
-                            p->params[i].pass = s->pass;
-                            p->params[i].tipo = s->tipo;
+                            s->var.desloc = -(4 + i);
+                            p->params[i].desloc = s->var.desloc;
+                            p->params[i].pass = s->var.pass;
+                            p->params[i].tipo = s->var.tipo;
                             s = s->abaixo;
                         }
                         p->num_params = desloc; }
                 |   // Procedimento sem parametros
+                |   ABRE_PARENTESES FECHA_PARENTESES
 ;
 
 decl_params:        decl_params PONTO_E_VIRGULA params
                 |   params
 ;
 
-params:         {num_idents = 0;}  VAR lista_id_vars DOIS_PONTOS IDENT
+params:         {num_idents = 0;}  VAR lista_id_var DOIS_PONTOS IDENT
                 { // Recebe por ref
                  s = tabela; 
                  for(i=0; i < num_idents; i++){
@@ -298,7 +309,7 @@ params:         {num_idents = 0;}  VAR lista_id_vars DOIS_PONTOS IDENT
                     s->var.tipo = (!strcmp("integer",token)?TINT:TBOOL);
                     s = s->abaixo;
                  }}
-            |   {num_idents = 0;}  lista_id_vars DOIS_PONTOS IDENT
+            |   {num_idents = 0;}  lista_id_var DOIS_PONTOS IDENT
                 { // Recebe por valor
                  s = tabela; 
                  for(i=0; i < num_idents; i++){
@@ -311,19 +322,21 @@ params:         {num_idents = 0;}  VAR lista_id_vars DOIS_PONTOS IDENT
 
 
 /* CHAMADA DE PROCEDIMENTOS */
-ch_proc: IDENT  {   p = buscaSimb(tabela,token);
+ch_proc: IDENT  {   p = buscaSimb(tabela,token); 
                     if ( p == NULL ) erro(PN_DECL);
-                    pushProc(p);}
+                    pushProc(p);
+                    pushInt(&nparams,0);}
          ABRE_PARENTESES passa_ou_nao FECHA_PARENTESES
                 {   p = popProc();
-                    num_params = pop(&nparams);
+                    num_params = popInt(&nparams);
                     if (num_params < p->num_params)
                         erro(NPARAM);
                     sprintf(cod,"CHPR R%02d",p->label);
-                    argCodigo(cod,p->nivel); }
+                    argCodigo(cod,p->nivel);
+                    num_params = 0;}
 ;
 
-passa_ou_nao:   passa_param { pushInt(&nparams,0);}
+passa_ou_nao:    passa_param 
             |
 ;
 
@@ -331,14 +344,8 @@ passa_param:    passa_param VIRGULA param { popInt(&tipos); }
             |   param { popInt(&tipos); }
 ;
 
-param   :   var      {  s = buscaSimbolo(token);
-                        p = popProc();
-                        num_params = pop(&nparams) + 1;
-                        varCodigo(s,num_params);
-                        pushProc(p);  
-                        pushInt(&nparams,num_params);}
-        |   expr     {  p = popProc();
-                        num_params = pop(&nparams);
+param   :   expr     {  p = popProc();
+                        num_params = popInt(&nparams);
                         if(p->params[num_params++].pass == PREF)
                             erro(num_params);
                         // Caso seja por valor, nao precisa fazer nada
@@ -352,14 +359,13 @@ param   :   var      {  s = buscaSimbolo(token);
 io:         read
         |   write
         |   writeln
-        |
 ;
 
 read:   READ ABRE_PARENTESES var FECHA_PARENTESES
         {   popInt(&tipos); geraCodigo(NULL,"LEIT");
-            if(s->cat == CVAR)
+            if(s->cat == CVAR){
                 argsCodigo("ARMZ",s->nivel,s->var.desloc);
-            else()}
+            } else erro(ATRIB); }
 ;
 
 write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
@@ -368,7 +374,7 @@ write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
 
 writeln:  WRITELN ABRE_PARENTESES writelist FECHA_PARENTESES
         { argCodigo("CRCT",(int)'\n');
-          argCodigo("IMPR",1);}
+          argCodigo("TEXT",1);}
 ;
 
 writelist:   writelist VIRGULA expr {popInt(&tipos); geraCodigo(NULL,"IMPR");}
