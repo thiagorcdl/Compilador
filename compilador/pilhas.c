@@ -123,6 +123,8 @@ com assinatura de \"%s\".",p->ident);
                         break;
         case PN_DECL:  sprintf(msg,"Procedimento \"%s\" não declarado.",token2);
                         break;
+        case FN_DECL:  sprintf(msg,"Função \"%s\" não declarada.",token2);
+                        break;
         case INCOMPT:   sprintf(msg,"Operação com tipos incompatíveis.");
                         break;
     }

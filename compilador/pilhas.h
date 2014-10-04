@@ -2,13 +2,14 @@
 #define TAM_TOKEN 16
 
 /* Erros */
+#define INCOMPT 108
 #define ATRIB 107
 #define TPARAM 106
 #define NPARAM 105
 #define JA_DECL 104
 #define VN_DECL 103
 #define PN_DECL 102
-#define INCOMPT 101
+#define FN_DECL 101
 
 
 /* Tipos */
@@ -24,7 +25,7 @@ typedef enum enum_pass {
 }enum_pass;
 
 typedef enum enum_cat {
-        CVAR, CPROC, CPARAM, CLABEL
+        CVAR, CPROC, CFUNC, CPARAM, CLABEL
 }enum_cat;
 
 typedef struct Var{
