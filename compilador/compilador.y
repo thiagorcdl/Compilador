@@ -54,7 +54,7 @@ void varCodigo(Simbolo *s, int param){
                 argsCodigo("CRVI ",s->nivel,s->var.desloc);
             }
         } else {
-            printf("@@@ s: %d p[%d]: %d\n",s->var.pass,param,p->params[param].pass);
+            //printf("@@@ s: %d p[%d]: %d\n",s->var.pass,param,p->params[param].pass);
             if(p->params[param].pass == PREF){
                 argsCodigo("CREN ",s->nivel,s->var.desloc);
             } else {
@@ -67,7 +67,7 @@ void varCodigo(Simbolo *s, int param){
 
 void armzCodigo(Simbolo *s){
     if( s->cat == CFUNC){           // Função recebendo valor de retorno
-        argsCodigo("ARMZ ",s->nivel,s->params[num_params].desloc);
+        argsCodigo("ARMZ ",s->nivel,s->params[s->num_params].desloc);
     } else if(s->var.pass == PREF){ // Param por referência
         argsCodigo("ARMI ",s->nivel,s->var.desloc);
     } else {                        // Var simples ou param porvalor
@@ -91,7 +91,7 @@ void armzCodigo(Simbolo *s){
 
 %%
 
-/* Inicializa variaveis globais */
+/* Inicializa variaveis globais do compilador */
 programa:   {   rotulo = 0; nl=1; flag_var=0;
                 tabela = NULL; tipos = NULL; string = NULL;
                 geraCodigo(NULL, "INPP");}
@@ -203,20 +203,21 @@ comando_sem_rotulo : atrib
                    | comando_goto
                    | comando_composto
                    | ch_proc
+                   | ch_func
                    | io
 ;
 
 /* ATRIBUIÇÃO */
 
-atrib:      recipiente ATRIBUICAO exprs {   cmpTipo(TVOID);
+atrib:      recipiente ATRIBUICAO exprs {   cmpTipo(TVOID); 
                                             armzCodigo(esq);}
 ;
 
 recipiente:   IDENT {   s = buscaSimb(tabela,token2); 
                         if ( s == NULL ) erro(VN_DECL);
-                        else if ( s.cat == CVAR || s.cat == CPARAM){
+                        else if ( s->cat == CVAR || s->cat == CPARAM){
                             pushInt(&tipos,s->var.tipo);
-                        } else if ( s.cat == CFUNC ){
+                        } else if ( s->cat == CFUNC ){
                             pushInt(&tipos,p->params[p->num_params].tipo);
                         } else erro(ATRIB);
                         esq = s; 
@@ -273,9 +274,9 @@ fator:      ABRE_PARENTESES expr FECHA_PARENTESES
         
 ;
 
-var: IDENT {  s = buscaSimb(tabela,token2); 
+var: IDENT { s = buscaSimb(tabela,token2); 
              if ( s == NULL ) erro(VN_DECL);
-             else if ( s.cat != CVAR ) erro(VN_DECL);
+             else if ( s->cat != CVAR && s->cat != CPARAM) erro(VN_DECL);
              pushInt(&tipos,s->var.tipo);
              flag_var =1;}
 ;
@@ -305,11 +306,11 @@ decl_proc:      PROCEDURE IDENT {     rotCodigo(rotulo);
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
 ;
 
-decl_func:      PROCEDURE IDENT {     rotCodigo(rotulo); 
+decl_func:      FUNCTION IDENT {     rotCodigo(rotulo); 
                                 nivel_lexico++;
                                 // Adiciona procedimento p à tabela
                                 p = criaSimb(token);
-                                p->cat = CPROC;
+                                p->cat = CFUNC;
                                 p->label = rotulo++;
                                 tabela = pushSimb(tabela,p);
                                 argCodigo("ENPR ",nivel_lexico);} 
@@ -319,12 +320,12 @@ decl_func:      PROCEDURE IDENT {     rotCodigo(rotulo);
                     p->params[p->num_params].pass = PVAL;
                     p->params[p->num_params].desloc = -(4 + p->num_params);
                     p->params[p->num_params].tipo = (!strcmp("integer",token)?
-                                                     TINT:TBOOL);
+                                                     TINT:TBOOL); 
                 }                
                 PONTO_E_VIRGULA bloco
                 {   s = tabela;
                     // Remove local vars, params e procedures de nl maior
-                    while(s->cat != CPROC || s->nivel > nivel_lexico)
+                    while(s->cat != CFUNC || s->nivel > nivel_lexico)
                         s = s->abaixo;
                     tabela = s; 
                     argCodigo("DMEM ",popInt(&nvars));
@@ -396,7 +397,7 @@ ch_func: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     pushInt(&nparams,0);
                     // Abre espaço para valor de retorno
                     geraCodigo(NULL,"AMEM 1");
-                    push(&tipos,p->params[0].tipo)}
+                    pushInt(&tipos,p->params[0].tipo);}
          passa_ou_nao
                 {   p = popProc();
                     num_params = popInt(&nparams);

@@ -69,6 +69,7 @@ Simbolo* pushSimb(Simbolo *, Simbolo *);
 Simbolo* rmSimb(Simbolo *, int);
 Simbolo* buscaSimb(Simbolo *, char *);
 Simbolo* criaSimb(char *ident);
+void dumpTabela(Simbolo *);
 
 /* Integer (labels, tipos)*/
 void pushInt(PilhaInt **, int);

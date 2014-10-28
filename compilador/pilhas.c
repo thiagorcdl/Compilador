@@ -100,6 +100,15 @@ Simbolo* popProc(){
     return proc;
 }
 
+void dumpTabela(Simbolo *topo){
+    printf("# Tabela de Simbolos:\n");
+    while(topo != NULL){
+        printf("+\t%d\t%s\t%d\t+\n",topo->nivel,topo->ident,topo->cat);
+        topo = topo->abaixo;
+    }
+    return;
+}
+
 void erro(int e){
     char msg[64], cmd[64];
     if (e < 100){
@@ -119,7 +128,7 @@ com assinatura de \"%s\".",p->ident);
                         break;
         case JA_DECL:   sprintf(msg,"Identificador \"%s\" já declarado.",token);
                         break;
-        case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token2);
+        case VN_DECL:  sprintf(msg,"Variável \"%s\" não declarada.",token2); 
                         break;
         case PN_DECL:  sprintf(msg,"Procedimento \"%s\" não declarado.",token2);
                         break;
@@ -133,6 +142,7 @@ com assinatura de \"%s\".",p->ident);
     fprintf(stderr,"\n# Erro de compilação (linha %d):\n>\t",nl);
     system(cmd);
     fprintf(stderr,"\n# %s\n# Abortando.\n\n",msg);
+    //dumpTabela(tabela);
     exit(e);
     return;
 }
