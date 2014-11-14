@@ -1,3 +1,4 @@
+#!/bin/sh
 clear
 echo "# Compilando..."
 make -f Makefile

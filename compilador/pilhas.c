@@ -134,6 +134,8 @@ com assinatura de \"%s\".",p->ident);
                         break;
         case FN_DECL:  sprintf(msg,"Função \"%s\" não declarada.",token2);
                         break;
+        case RN_DECL:  sprintf(msg,"Rótulo \"%s\" não declarado.",token2);
+                        break;
         case INCOMPT:   sprintf(msg,"Operação com tipos incompatíveis.");
                         break;
     }

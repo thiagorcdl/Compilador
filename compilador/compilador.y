@@ -15,23 +15,35 @@
 
 
 #define argCodigo(str,a)    sprintf(cod,"%s%d",str,a);\
-                            geraCodigo(NULL,cod)
+                            if (usa_rot) { \
+                                geraCodigo(rot,cod);\
+                                usa_rot=0;\
+                            } else  geraCodigo(NULL,cod)
 
 #define argsCodigo(str,a1,a2)   if(str[strlen(str)-1]=='R')\
                                     sprintf(cod,"%s%02d,%d",str,a1,a2);\
                                 else\
                                     sprintf(cod,"%s%d,%d",str,a1,a2);\
-                                geraCodigo(NULL,cod)
+                                if (usa_rot) { \
+                                    geraCodigo(rot,cod);\
+                                    usa_rot=0;\
+                                } else  geraCodigo(NULL,cod)
 
-#define rotCodigo(r)    sprintf(cod,"R%02d",r);\
-                        geraCodigo(cod,"NADA")
+#define rotCodigo(r)    if (usa_rot) { \
+                            geraCodigo(rot,"NADA");\
+                            usa_rot=0;\
+                        } sprintf(rot,"R%02d",r);\
+                          geraCodigo(rot,"NADA")
 
 #define desvCodigo(str,r)   sprintf(cod,"%s R%02d",str,r);\
-                            geraCodigo(NULL,cod)
+                            if (usa_rot) { \
+                                geraCodigo(rot,cod);\
+                                usa_rot=0;\
+                            } else  geraCodigo(NULL,cod)
                         
 
 int num_idents, num_params, flag_var;
-int i, j, rotulo, len;
+int i, j, rotulo, usa_rot, len;
 char cod[32],rot[16];
 int desloc = 0, nivel_lexico = 0;
 
@@ -70,9 +82,17 @@ void armzCodigo(Simbolo *s){
         argsCodigo("ARMZ ",s->nivel,s->params[s->num_params].desloc);
     } else if(s->var.pass == PREF){ // Param por referência
         argsCodigo("ARMI ",s->nivel,s->var.desloc);
-    } else {                        // Var simples ou param porvalor
+    } else {                        // Var simples ou param por valor
         argsCodigo("ARMZ ",s->nivel,s->var.desloc);
     }
+    return;
+}
+
+void updateRotulo(int r){
+    if (r>=0){
+        usa_rotulo = 1;
+        sprintf(rot,"R%02d",r);
+    } else usa_rotulo = 0;
     return;
 }
 
@@ -92,7 +112,7 @@ void armzCodigo(Simbolo *s){
 %%
 
 /* Inicializa variaveis globais do compilador */
-programa:   {   rotulo = 0; nl=1; flag_var=0;
+programa:   {   rotulo = 0; rot_atual = NULL; nl=1; flag_var=0;
                 tabela = NULL; tipos = NULL; string = NULL;
                 geraCodigo(NULL, "INPP");}
                 PROGRAM IDENT 
@@ -189,14 +209,6 @@ comando:    numero comando_sem_rotulo
             | comando_composto 
 ;
 
-numero:     NUMERO DOIS_PONTOS
-            |
-;
-
-comando_goto:   GOTO IDENT {sprintf(cod,"DSVS %s",token);
-                            geraCodigo(NULL,cod);}
-;
-
 comando_sem_rotulo : atrib 
                    | while
                    | if
@@ -205,6 +217,39 @@ comando_sem_rotulo : atrib
                    | ch_proc
                    | ch_func
                    | io
+;
+
+
+/* LABELS */
+parte_decl_labels:  LABEL decl_labels PONTO_E_VIRGULA
+                    |
+;
+
+decl_labels: decl_labels decl_label
+            | decl_label
+;
+
+decl_label: NUMERO {    s = criaSimb(token);
+                        s->cat = CLABEL;
+                        s->label = rotulo++;
+                        tabela = pushSimb(tabela,s);}
+;
+
+numero:     NUMERO {    s = buscaSimb(tabela,token);
+                        if ( s == NULL ) erro(RN_DECL);
+                        updateRotulo(s->label);
+                        argsCodigo("ENRT",nivel_lexico,nvars->val); }
+            DOIS_PONTOS
+            |
+;
+
+comando_goto:   GOTO NUMERO {   s = buscaSimb(tabela,token);
+                                if ( s == NULL ) erro(RN_DECL);
+                                sprintf(cod,"DSVR R%02d,%d,%d",s->label,s->nivel,nivel_lexico);
+                                if (usa_rot) {
+                                    geraCodigo(rot,cod);
+                                    usa_rot=0;
+                                } else geraCodigo(NULL,cod);}
 ;
 
 /* ATRIBUIÇÃO */
@@ -287,14 +332,14 @@ declara_subrot:         declara_subrot decl_proc
                     |
 ;
 
-decl_proc:      PROCEDURE IDENT {     rotCodigo(rotulo); 
-                                nivel_lexico++;
-                                // Adiciona procedimento p à tabela
-                                p = criaSimb(token);
-                                p->cat = CPROC;
-                                p->label = rotulo++;
-                                tabela = pushSimb(tabela,p);
-                                argCodigo("ENPR ",nivel_lexico);} 
+decl_proc:      PROCEDURE IDENT {   updateRotulo(rotulo);
+                                    nivel_lexico++;
+                                    // Adiciona procedimento p à tabela
+                                    p = criaSimb(token);
+                                    p->cat = CPROC;
+                                    p->label = rotulo++;
+                                    tabela = pushSimb(tabela,p);
+                                    argCodigo("ENPR ",nivel_lexico);}
                 params_formais  PONTO_E_VIRGULA 
                 bloco
                 {   s = tabela;
@@ -306,14 +351,14 @@ decl_proc:      PROCEDURE IDENT {     rotCodigo(rotulo);
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
 ;
 
-decl_func:      FUNCTION IDENT {     rotCodigo(rotulo); 
-                                nivel_lexico++;
-                                // Adiciona procedimento p à tabela
-                                p = criaSimb(token);
-                                p->cat = CFUNC;
-                                p->label = rotulo++;
-                                tabela = pushSimb(tabela,p);
-                                argCodigo("ENPR ",nivel_lexico);} 
+decl_func:      FUNCTION IDENT {    updateRotulo(rotulo);
+                                    nivel_lexico++;
+                                    // Adiciona função p à tabela
+                                    p = criaSimb(token);
+                                    p->cat = CFUNC;
+                                    p->label = rotulo++;
+                                    tabela = pushSimb(tabela,p);
+                                    argCodigo("ENPR ",nivel_lexico);}
                 params_formais  DOIS_PONTOS
                 tipo { 
                     // Considera a "variável" p como um parâmetro
