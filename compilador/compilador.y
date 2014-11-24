@@ -121,7 +121,7 @@ programa:   {   rotulo = 0; rot_atual = NULL; nl=1; flag_var=0;
                                 geraCodigo (NULL, "PARA"); }
 ;
 
-bloco:          parte_declara_vars 
+bloco:          parte_decl_labels parte_declara_vars
             {   desvCodigo("DSVS",rotulo); pushInt(&rotulos,rotulo++);}
                 declara_subrot
             {   rotCodigo(popInt(&rotulos));}
