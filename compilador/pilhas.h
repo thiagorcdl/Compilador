@@ -10,7 +10,7 @@
 #define VN_DECL 103
 #define PN_DECL 102
 #define FN_DECL 101
-#define RN_DECL 101
+#define RN_DECL 100
 
 
 /* Tipos */

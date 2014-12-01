@@ -5,7 +5,7 @@ var i,j :  integer;
     begin
         a := 20;
         pinduca := a * i
-    end
+    end;
 begin    
     i := 5;
     j := pinduca(i);

@@ -4,11 +4,18 @@
 #include "pilhas.h"
 #include "compilador.h"
 
+
+void dumpInt(PilhaInt *topo){
+
+    return;
+}
+
 void pushInt(PilhaInt **p, int val){
     PilhaInt *topo;
     topo = malloc(sizeof(PilhaInt));
     topo->val = val;
     topo->abaixo = (*p);
+    if(topo->abaixo == NULL)
     *p = topo;
     return;
 }

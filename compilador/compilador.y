@@ -90,9 +90,9 @@ void armzCodigo(Simbolo *s){
 
 void updateRotulo(int r){
     if (r>=0){
-        usa_rotulo = 1;
+        usa_rot = 1;
         sprintf(rot,"R%02d",r);
-    } else usa_rotulo = 0;
+    } else usa_rot = 0;
     return;
 }
 
@@ -112,7 +112,7 @@ void updateRotulo(int r){
 %%
 
 /* Inicializa variaveis globais do compilador */
-programa:   {   rotulo = 0; rot_atual = NULL; nl=1; flag_var=0;
+programa:   {   rotulo = 0; nl=1; flag_var=0;
                 tabela = NULL; tipos = NULL; string = NULL;
                 geraCodigo(NULL, "INPP");}
                 PROGRAM IDENT 
@@ -179,12 +179,12 @@ if     : if_then cond_else { rotCodigo(popInt(&rotulos)); }
 ;
 
 if_then     :   IF expr { desvCodigo("DSVF",rotulo++); pushInt(&rotulos,rotulo++);}
-                THEN comando_sem_rotulo { desvCodigo("DSVS",rotulos->val);
-                                          rotCodigo(rotulos->val-1);}
+                THEN comando { desvCodigo("DSVS",rotulos->val);
+                               rotCodigo(rotulos->val-1);}
 ;
 
 cond_else   :   ELSE { }
-                comando_sem_rotulo
+                comando
                 | 
 ;
 
@@ -192,31 +192,30 @@ cond_else   :   ELSE { }
 /* WHILE */
 while:  WHILE { rotCodigo(rotulo++); }
         expr { desvCodigo("DSVF",rotulo); pushInt(&rotulos,rotulo++);}
-        DO comando_sem_rotulo { desvCodigo("DSVS",rotulos->val - 1);
+        DO comando { desvCodigo("DSVS",rotulos->val - 1);
                                 rotCodigo(popInt(&rotulos));}
 ;
 
 
 /* COMANDOS */
-comando_composto: T_BEGIN comandos T_END 
-;
-
 comandos:   comandos PONTO_E_VIRGULA comando
             | comando
 ;
 
-comando:    numero comando_sem_rotulo
-            | comando_composto 
+comando:    poe_label comando_sem_rotulo
+            | comando_composto
 ;
 
-comando_sem_rotulo : atrib 
+comando_sem_rotulo : atrib
                    | while
                    | if
                    | comando_goto
-                   | comando_composto
                    | ch_proc
                    | ch_func
                    | io
+;
+
+comando_composto: T_BEGIN comandos T_END 
 ;
 
 
@@ -225,20 +224,24 @@ parte_decl_labels:  LABEL decl_labels PONTO_E_VIRGULA
                     |
 ;
 
-decl_labels: decl_labels decl_label
+decl_labels: decl_labels VIRGULA decl_label
             | decl_label
 ;
 
 decl_label: NUMERO {    s = criaSimb(token);
                         s->cat = CLABEL;
+                        printf("@@@@@@\nlabel \'%s\' rot MEPA: %d\n@@@@@@@\n",s->ident,rotulo);
+                        fflush(stdout);
                         s->label = rotulo++;
                         tabela = pushSimb(tabela,s);}
 ;
 
-numero:     NUMERO {    s = buscaSimb(tabela,token);
+poe_label:  NUMERO {    s = buscaSimb(tabela,token);
                         if ( s == NULL ) erro(RN_DECL);
+                        printf("@@@@@@\nlabel \'%s\' rot MEPA: %d\n@@@@@@@\n",s->ident,s->label);
+                        fflush(stdout);
                         updateRotulo(s->label);
-                        argsCodigo("ENRT",nivel_lexico,nvars->val); }
+                        argsCodigo("ENRT ",nivel_lexico,nvars->val); }
             DOIS_PONTOS
             |
 ;
@@ -327,8 +330,8 @@ var: IDENT { s = buscaSimb(tabela,token2);
 ;
 
 /* DECLARAÇÃO DE SUBROTINAS */
-declara_subrot:         declara_subrot decl_proc
-                    |   declara_subrot decl_func
+declara_subrot:         declara_subrot decl_proc PONTO_E_VIRGULA
+                    |   declara_subrot decl_func PONTO_E_VIRGULA
                     |
 ;
 
@@ -433,6 +436,7 @@ ch_proc: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     if (num_params < p->num_params)
                         erro(NPARAM);
                     argsCodigo("CHPR R",p->label,p->nivel);
+                    //printf("rotulo atual: %s\n\n",rotulos->val); fflush(stdout);
                     num_params = 0;}
 ;
 ch_func: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
