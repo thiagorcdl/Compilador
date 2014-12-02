@@ -7,7 +7,7 @@ var i,j :  integer;
         i := i + 1;
         k := k * 3;
         writeln(a*i)
-    end
+    end;
 begin    
     i := 5;
     j := 10;

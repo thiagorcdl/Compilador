@@ -23,7 +23,7 @@ void pushInt(PilhaInt **p, int val){
     topo->val = val;
     topo->abaixo = (*p);
     *p = topo;
-    dumpInt(*p);
+    //dumpInt(*p);
     return;
 }
 
@@ -34,7 +34,7 @@ int popInt(PilhaInt **p){
     val = (*p)->val;
     *p = (*p)->abaixo;
     free(tmp);
-    dumpInt(*p);
+    //dumpInt(*p);
     return val;
 }
 

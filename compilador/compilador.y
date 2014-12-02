@@ -112,7 +112,7 @@ void updateRotulo(int r){
 %%
 
 /* Inicializa variaveis globais do compilador */
-programa:   {   rotulo = 50; nl=1; flag_var=0;
+programa:   {   rotulo = 0; nl=1; flag_var=0;
                 tabela = NULL; tipos = NULL; string = NULL; rotulos = NULL;
                 geraCodigo(NULL, "INPP");}
                 PROGRAM IDENT
@@ -351,7 +351,7 @@ decl_proc:      PROCEDURE IDENT {   updateRotulo(rotulo);
                         s = s->abaixo;
                     tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
-                    argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
+                    argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 ;
 
 decl_func:      FUNCTION IDENT {    updateRotulo(rotulo);
@@ -377,7 +377,7 @@ decl_func:      FUNCTION IDENT {    updateRotulo(rotulo);
                         s = s->abaixo;
                     tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
-                    argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
+                    argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 ;
 
 
@@ -435,7 +435,7 @@ ch_proc: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
                         erro(NPARAM);
-                    argsCodigo("CHPR R",p->label,p->nivel);
+                    argsCodigo("CHPR R",p->label,nivel_lexico);
                     //printf("rotulo atual: %s\n\n",rotulos->val); fflush(stdout);
                     num_params = 0;}
 ;
@@ -452,7 +452,7 @@ ch_func: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
                         erro(NPARAM);
-                    argsCodigo("CHPR R",p->label,p->nivel);
+                    argsCodigo("CHPR R",p->label,nivel_lexico);
                     num_params = 0;}
 ;
 

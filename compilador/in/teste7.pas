@@ -7,13 +7,13 @@ var i :  integer;
         begin
             a := 20;
             writeln("zaeli: ",a)
-        end
+        end;
     begin
         a := 20;
         b := 30;
         zaeli();
         writeln("pinduca: ",a+b)
-    end
+    end;
 begin    
     i := 5;
     writeln("main: ",i);

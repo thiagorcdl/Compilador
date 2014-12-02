@@ -1484,7 +1484,7 @@ yyreduce:
     {
         case 2:
 #line 115 "compilador.y" /* yacc.c:1646  */
-    {   rotulo = 50; nl=1; flag_var=0;
+    {   rotulo = 0; nl=1; flag_var=0;
                 tabela = NULL; tipos = NULL; string = NULL; rotulos = NULL;
                 geraCodigo(NULL, "INPP");}
 #line 1491 "compilador.tab.c" /* yacc.c:1646  */
@@ -1813,7 +1813,7 @@ yyreduce:
                         s = s->abaixo;
                     tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
-                    argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
+                    argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 #line 1818 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1850,7 +1850,7 @@ yyreduce:
                         s = s->abaixo;
                     tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
-                    argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
+                    argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 #line 1855 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1930,7 +1930,7 @@ yyreduce:
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
                         erro(NPARAM);
-                    argsCodigo("CHPR R",p->label,p->nivel);
+                    argsCodigo("CHPR R",p->label,nivel_lexico);
                     //printf("rotulo atual: %s\n\n",rotulos->val); fflush(stdout);
                     num_params = 0;}
 #line 1937 "compilador.tab.c" /* yacc.c:1646  */
@@ -1955,7 +1955,7 @@ yyreduce:
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
                         erro(NPARAM);
-                    argsCodigo("CHPR R",p->label,p->nivel);
+                    argsCodigo("CHPR R",p->label,nivel_lexico);
                     num_params = 0;}
 #line 1961 "compilador.tab.c" /* yacc.c:1646  */
     break;
