@@ -79,9 +79,9 @@
                             } else  geraCodigo(NULL,cod)
 
 #define argsCodigo(str,a1,a2)   if(str[strlen(str)-1]=='R')\
-                                    sprintf(cod,"%s%02d,%d",str,a1,a2);\
+                                    sprintf(cod,"%s%02d, %d",str,a1,a2);\
                                 else\
-                                    sprintf(cod,"%s%d,%d",str,a1,a2);\
+                                    sprintf(cod,"%s%d, %d",str,a1,a2);\
                                 if (usa_rot) { \
                                     geraCodigo(rot,cod);\
                                     usa_rot=0;\
@@ -98,7 +98,7 @@
                                 geraCodigo(rot,cod);\
                                 usa_rot=0;\
                             } else  geraCodigo(NULL,cod)
-                        
+
 
 int num_idents, num_params, flag_var;
 int i, j, rotulo, usa_rot, len;
@@ -114,7 +114,7 @@ void varCodigo(Simbolo *s, int param){
             argsCodigo("CRVL ",s->nivel,s->var.desloc);
         }
     } else {
-        if(param > p->num_params) 
+        if(param > p->num_params)
             erro(NPARAM);
         param--;
         if(s->var.pass == PREF){
@@ -560,19 +560,19 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   115,   115,   115,   125,   128,   124,   134,   134,   138,
-     141,   142,   145,   147,   145,   155,   156,   157,   158,   161,
-     167,   174,   175,   180,   184,   184,   190,   190,   192,   197,
-     198,   197,   207,   208,   211,   212,   215,   216,   217,   218,
-     219,   220,   221,   224,   229,   230,   233,   234,   237,   245,
-     245,   252,   255,   266,   270,   282,   284,   286,   288,   290,
-     292,   294,   297,   299,   301,   303,   306,   308,   310,   312,
-     314,   318,   319,   324,   325,   326,   327,   331,   339,   340,
-     341,   344,   344,   363,   372,   363,   390,   392,   390,   404,
-     405,   408,   408,   409,   409,   412,   421,   434,   434,   448,
-     448,   465,   466,   467,   470,   470,   471,   471,   474,   487,
-     488,   489,   492,   500,   504,   509,   510,   511,   512,   515,
-     515,   525
+       0,   115,   115,   115,   125,   127,   124,   132,   132,   136,
+     139,   140,   143,   145,   143,   153,   154,   155,   156,   159,
+     165,   172,   173,   178,   181,   181,   186,   186,   188,   193,
+     194,   193,   201,   202,   205,   206,   209,   210,   211,   212,
+     213,   214,   215,   218,   223,   224,   227,   228,   231,   239,
+     239,   246,   249,   260,   264,   276,   278,   280,   282,   284,
+     286,   288,   291,   293,   295,   297,   300,   302,   304,   306,
+     308,   312,   313,   318,   319,   320,   321,   325,   333,   334,
+     335,   338,   338,   357,   366,   357,   384,   386,   384,   398,
+     399,   402,   402,   403,   403,   406,   415,   428,   428,   442,
+     442,   459,   460,   461,   464,   464,   465,   465,   468,   481,
+     482,   483,   486,   494,   498,   503,   504,   505,   506,   509,
+     509,   519
 };
 #endif
 
@@ -1484,8 +1484,8 @@ yyreduce:
     {
         case 2:
 #line 115 "compilador.y" /* yacc.c:1646  */
-    {   rotulo = 0; nl=1; flag_var=0;
-                tabela = NULL; tipos = NULL; string = NULL; rotulos= NULL;
+    {   rotulo = 50; nl=1; flag_var=0;
+                tabela = NULL; tipos = NULL; string = NULL; rotulos = NULL;
                 geraCodigo(NULL, "INPP");}
 #line 1491 "compilador.tab.c" /* yacc.c:1646  */
     break;
@@ -1499,117 +1499,117 @@ yyreduce:
 
   case 4:
 #line 125 "compilador.y" /* yacc.c:1646  */
-    {   desvCodigo("DSVS",rotulo); pushInt(&rotulos,rotulo++);
-    dumpInt(rotulos);}
-#line 1505 "compilador.tab.c" /* yacc.c:1646  */
+    {   desvCodigo("DSVS",rotulo); pushInt(&rotulos,rotulo++);}
+#line 1504 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 128 "compilador.y" /* yacc.c:1646  */
-    {   rotCodigo(popInt(&rotulos));
-    dumpInt(rotulos);}
-#line 1512 "compilador.tab.c" /* yacc.c:1646  */
+#line 127 "compilador.y" /* yacc.c:1646  */
+    {   rotCodigo(popInt(&rotulos));}
+#line 1510 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 134 "compilador.y" /* yacc.c:1646  */
+#line 132 "compilador.y" /* yacc.c:1646  */
     { desloc=0; }
-#line 1518 "compilador.tab.c" /* yacc.c:1646  */
+#line 1516 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 136 "compilador.y" /* yacc.c:1646  */
+#line 134 "compilador.y" /* yacc.c:1646  */
     {   argCodigo("AMEM ",desloc);
                         pushInt(&nvars,desloc);}
-#line 1525 "compilador.tab.c" /* yacc.c:1646  */
+#line 1523 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 145 "compilador.y" /* yacc.c:1646  */
+#line 143 "compilador.y" /* yacc.c:1646  */
     { num_idents=0;}
-#line 1531 "compilador.tab.c" /* yacc.c:1646  */
+#line 1529 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 147 "compilador.y" /* yacc.c:1646  */
-    { s = tabela; 
+#line 145 "compilador.y" /* yacc.c:1646  */
+    { s = tabela;
                      for(i=0; i < num_idents; i++){
                         s->var.tipo = (!strcmp("integer",token)?TINT:TBOOL);
                         s = s->abaixo;
                      }}
-#line 1541 "compilador.tab.c" /* yacc.c:1646  */
+#line 1539 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 162 "compilador.y" /* yacc.c:1646  */
+#line 160 "compilador.y" /* yacc.c:1646  */
     { s = criaSimb(token);
                 s->cat = CVAR;
                 s->var.desloc = desloc++;
                 tabela = pushSimb(tabela,s);
                 num_idents++;}
-#line 1551 "compilador.tab.c" /* yacc.c:1646  */
+#line 1549 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 167 "compilador.y" /* yacc.c:1646  */
+#line 165 "compilador.y" /* yacc.c:1646  */
     {   s = criaSimb(token);
                         s->cat = CVAR;
                         s->var.desloc = desloc++;
                         tabela = pushSimb(tabela,s);
                         num_idents++;}
-#line 1561 "compilador.tab.c" /* yacc.c:1646  */
+#line 1559 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 180 "compilador.y" /* yacc.c:1646  */
-    { rotCodigo(popInt(&rotulos));
-    dumpInt(rotulos);}
-#line 1568 "compilador.tab.c" /* yacc.c:1646  */
+#line 178 "compilador.y" /* yacc.c:1646  */
+    { rotCodigo(popInt(&rotulos)); }
+#line 1565 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 184 "compilador.y" /* yacc.c:1646  */
-    { desvCodigo("DSVF",rotulo++); pushInt(&rotulos,rotulo++);
-    dumpInt(rotulos);}
-#line 1575 "compilador.tab.c" /* yacc.c:1646  */
+#line 181 "compilador.y" /* yacc.c:1646  */
+    { desvCodigo("DSVF",rotulo++); pushInt(&rotulos,rotulo++);}
+#line 1571 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 186 "compilador.y" /* yacc.c:1646  */
+#line 182 "compilador.y" /* yacc.c:1646  */
     { desvCodigo("DSVS",rotulos->val);
                                rotCodigo(rotulos->val-1);}
-#line 1582 "compilador.tab.c" /* yacc.c:1646  */
+#line 1578 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 190 "compilador.y" /* yacc.c:1646  */
+#line 186 "compilador.y" /* yacc.c:1646  */
     { }
-#line 1588 "compilador.tab.c" /* yacc.c:1646  */
+#line 1584 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 197 "compilador.y" /* yacc.c:1646  */
+#line 193 "compilador.y" /* yacc.c:1646  */
     { rotCodigo(rotulo++); }
-#line 1594 "compilador.tab.c" /* yacc.c:1646  */
+#line 1590 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 198 "compilador.y" /* yacc.c:1646  */
-    { desvCodigo("DSVF",rotulo); pushInt(&rotulos,rotulo++);
-    dumpInt(rotulos);}
-#line 1601 "compilador.tab.c" /* yacc.c:1646  */
+#line 194 "compilador.y" /* yacc.c:1646  */
+    { desvCodigo("DSVF",rotulo); pushInt(&rotulos,rotulo++);}
+#line 1596 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 200 "compilador.y" /* yacc.c:1646  */
+#line 195 "compilador.y" /* yacc.c:1646  */
     { desvCodigo("DSVS",rotulos->val - 1);
-                                rotCodigo(popInt(&rotulos));
-    dumpInt(rotulos);}
+                                rotCodigo(popInt(&rotulos));}
+#line 1603 "compilador.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 209 "compilador.y" /* yacc.c:1646  */
+    {printf("atribuiu\n\n");fflush(stdout);}
 #line 1609 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 237 "compilador.y" /* yacc.c:1646  */
+#line 231 "compilador.y" /* yacc.c:1646  */
     {    s = criaSimb(token);
                         s->cat = CLABEL;
                         //printf("@@@@@@\nlabel \'%s\' rot MEPA: %d\n@@@@@@@\n",s->ident,rotulo);
@@ -1620,7 +1620,7 @@ yyreduce:
     break;
 
   case 49:
-#line 245 "compilador.y" /* yacc.c:1646  */
+#line 239 "compilador.y" /* yacc.c:1646  */
     {    s = buscaSimb(tabela,token);
                         if ( s == NULL ) erro(RN_DECL);
                         //printf("@@@@@@\nlabel \'%s\' rot MEPA: %d\n@@@@@@@\n",s->ident,s->label);
@@ -1631,10 +1631,10 @@ yyreduce:
     break;
 
   case 52:
-#line 255 "compilador.y" /* yacc.c:1646  */
+#line 249 "compilador.y" /* yacc.c:1646  */
     {   s = buscaSimb(tabela,token);
                                 if ( s == NULL ) erro(RN_DECL);
-                                sprintf(cod,"DSVR R%02d,%d,%d",s->label,s->nivel,nivel_lexico);
+                                sprintf(cod,"DSVR R%02d, %d, %d",s->label,s->nivel,nivel_lexico);
                                 if (usa_rot) {
                                     geraCodigo(rot,cod);
                                     usa_rot=0;
@@ -1643,119 +1643,119 @@ yyreduce:
     break;
 
   case 53:
-#line 266 "compilador.y" /* yacc.c:1646  */
-    {   cmpTipo(TVOID); 
+#line 260 "compilador.y" /* yacc.c:1646  */
+    {   cmpTipo(TVOID);
                                             armzCodigo(esq);}
 #line 1650 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 270 "compilador.y" /* yacc.c:1646  */
-    {   s = buscaSimb(tabela,token2); 
+#line 264 "compilador.y" /* yacc.c:1646  */
+    {   s = buscaSimb(tabela,token2);
                         if ( s == NULL ) erro(VN_DECL);
                         else if ( s->cat == CVAR || s->cat == CPARAM){
                             pushInt(&tipos,s->var.tipo);
                         } else if ( s->cat == CFUNC ){
                             pushInt(&tipos,p->params[p->num_params].tipo);
                         } else erro(ATRIB);
-                        esq = s; 
+                        esq = s;
                       }
 #line 1664 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 282 "compilador.y" /* yacc.c:1646  */
+#line 276 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TVOID); pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"CMDG");}
 #line 1671 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 284 "compilador.y" /* yacc.c:1646  */
+#line 278 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TVOID); pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"CMIG");}
 #line 1678 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 286 "compilador.y" /* yacc.c:1646  */
+#line 280 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT);  pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"CMME");}
 #line 1685 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 288 "compilador.y" /* yacc.c:1646  */
+#line 282 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT);  pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"CMMA");}
 #line 1692 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 290 "compilador.y" /* yacc.c:1646  */
+#line 284 "compilador.y" /* yacc.c:1646  */
     { cmpTipo(TINT); pushInt(&tipos,TBOOL);
                                         geraCodigo(NULL,"CMEG");}
 #line 1699 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 292 "compilador.y" /* yacc.c:1646  */
+#line 286 "compilador.y" /* yacc.c:1646  */
     { cmpTipo(TINT); pushInt(&tipos,TBOOL);
                                         geraCodigo(NULL,"CMAG");}
 #line 1706 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 297 "compilador.y" /* yacc.c:1646  */
+#line 291 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT); pushInt(&tipos,TINT);
                                     geraCodigo(NULL,"SOMA");}
 #line 1713 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 299 "compilador.y" /* yacc.c:1646  */
+#line 293 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT); pushInt(&tipos,TINT);
                                     geraCodigo(NULL,"SUBT");}
 #line 1720 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 301 "compilador.y" /* yacc.c:1646  */
+#line 295 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TBOOL); pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"CONJ");}
 #line 1727 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 306 "compilador.y" /* yacc.c:1646  */
+#line 300 "compilador.y" /* yacc.c:1646  */
     {   pushInt(&tipos,TBOOL); cmpTipo(TBOOL);
                                     pushInt(&tipos,TBOOL); geraCodigo(NULL,"NEGA");}
 #line 1734 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 308 "compilador.y" /* yacc.c:1646  */
+#line 302 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT); pushInt(&tipos,TINT);
                                     geraCodigo(NULL,"MULT");}
 #line 1741 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 310 "compilador.y" /* yacc.c:1646  */
+#line 304 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TINT); pushInt(&tipos,TINT);
                                     geraCodigo(NULL,"DIVI");}
 #line 1748 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 312 "compilador.y" /* yacc.c:1646  */
+#line 306 "compilador.y" /* yacc.c:1646  */
     {   cmpTipo(TBOOL); pushInt(&tipos,TBOOL);
                                     geraCodigo(NULL,"DISJ");}
 #line 1755 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 319 "compilador.y" /* yacc.c:1646  */
+#line 313 "compilador.y" /* yacc.c:1646  */
     {   // Checa se variável está sendo passada para procedure
                         if (procs == NULL)
                             varCodigo(s,0);
@@ -1765,26 +1765,26 @@ yyreduce:
     break;
 
   case 74:
-#line 325 "compilador.y" /* yacc.c:1646  */
+#line 319 "compilador.y" /* yacc.c:1646  */
     { geraCodigo(NULL,"CRCT 1"); pushInt(&tipos,TBOOL);}
 #line 1771 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 326 "compilador.y" /* yacc.c:1646  */
+#line 320 "compilador.y" /* yacc.c:1646  */
     { geraCodigo(NULL,"CRCT 0"); pushInt(&tipos,TBOOL);}
 #line 1777 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 327 "compilador.y" /* yacc.c:1646  */
+#line 321 "compilador.y" /* yacc.c:1646  */
     { argCodigo("CRCT ",atoi(token));  pushInt(&tipos,TINT);}
 #line 1783 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 331 "compilador.y" /* yacc.c:1646  */
-    { s = buscaSimb(tabela,token2); 
+#line 325 "compilador.y" /* yacc.c:1646  */
+    { s = buscaSimb(tabela,token2);
              if ( s == NULL ) erro(VN_DECL);
              else if ( s->cat != CVAR && s->cat != CPARAM) erro(VN_DECL);
              pushInt(&tipos,s->var.tipo);
@@ -1793,7 +1793,7 @@ yyreduce:
     break;
 
   case 81:
-#line 344 "compilador.y" /* yacc.c:1646  */
+#line 338 "compilador.y" /* yacc.c:1646  */
     {   updateRotulo(rotulo);
                                     nivel_lexico++;
                                     // Adiciona procedimento p à tabela
@@ -1806,19 +1806,19 @@ yyreduce:
     break;
 
   case 82:
-#line 354 "compilador.y" /* yacc.c:1646  */
+#line 348 "compilador.y" /* yacc.c:1646  */
     {   s = tabela;
                     // Remove local vars, params e procedures de nl maior
                     while(s->cat != CPROC || s->nivel > nivel_lexico)
                         s = s->abaixo;
-                    tabela = s; 
+                    tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
 #line 1818 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 363 "compilador.y" /* yacc.c:1646  */
+#line 357 "compilador.y" /* yacc.c:1646  */
     {    updateRotulo(rotulo);
                                     nivel_lexico++;
                                     // Adiciona função p à tabela
@@ -1831,38 +1831,38 @@ yyreduce:
     break;
 
   case 84:
-#line 372 "compilador.y" /* yacc.c:1646  */
-    { 
+#line 366 "compilador.y" /* yacc.c:1646  */
+    {
                     // Considera a "variável" p como um parâmetro
                     p->params[p->num_params].pass = PVAL;
                     p->params[p->num_params].desloc = -(4 + p->num_params);
                     p->params[p->num_params].tipo = (!strcmp("integer",token)?
-                                                     TINT:TBOOL); 
+                                                     TINT:TBOOL);
                 }
 #line 1843 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 380 "compilador.y" /* yacc.c:1646  */
+#line 374 "compilador.y" /* yacc.c:1646  */
     {   s = tabela;
                     // Remove local vars, params e procedures de nl maior
                     while(s->cat != CFUNC || s->nivel > nivel_lexico)
                         s = s->abaixo;
-                    tabela = s; 
+                    tabela = s;
                     argCodigo("DMEM ",popInt(&nvars));
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params); }
 #line 1855 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 390 "compilador.y" /* yacc.c:1646  */
+#line 384 "compilador.y" /* yacc.c:1646  */
     {   desloc = 0; }
 #line 1861 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 392 "compilador.y" /* yacc.c:1646  */
-    {   s = tabela; 
+#line 386 "compilador.y" /* yacc.c:1646  */
+    {   s = tabela;
                         p->params = malloc((desloc+1) * sizeof(Var));
                         // Copia params da tabela para a lista do procedimento
                         for(i=1; i <= desloc; i++){
@@ -1877,21 +1877,21 @@ yyreduce:
     break;
 
   case 91:
-#line 408 "compilador.y" /* yacc.c:1646  */
+#line 402 "compilador.y" /* yacc.c:1646  */
     {num_idents = 0;}
 #line 1883 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 409 "compilador.y" /* yacc.c:1646  */
+#line 403 "compilador.y" /* yacc.c:1646  */
     {num_idents = 0;}
 #line 1889 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 413 "compilador.y" /* yacc.c:1646  */
+#line 407 "compilador.y" /* yacc.c:1646  */
     { // Recebe por ref
-                 s = tabela; 
+                 s = tabela;
                  for(i=0; i < num_idents; i++){
                     s->cat = CPARAM;
                     s->var.pass = PREF;
@@ -1902,9 +1902,9 @@ yyreduce:
     break;
 
   case 96:
-#line 422 "compilador.y" /* yacc.c:1646  */
+#line 416 "compilador.y" /* yacc.c:1646  */
     { // Recebe por valor
-                 s = tabela; 
+                 s = tabela;
                  for(i=0; i < num_idents; i++){
                     s->cat = CPARAM;
                     s->var.pass = PVAL;
@@ -1915,7 +1915,7 @@ yyreduce:
     break;
 
   case 97:
-#line 434 "compilador.y" /* yacc.c:1646  */
+#line 428 "compilador.y" /* yacc.c:1646  */
     {   p = buscaSimb(tabela,token2);  debug(token2);
                     if ( p == NULL ) erro(PN_DECL);
                     else if ( p->cat != CPROC ) erro(PN_DECL);
@@ -1925,7 +1925,7 @@ yyreduce:
     break;
 
   case 98:
-#line 440 "compilador.y" /* yacc.c:1646  */
+#line 434 "compilador.y" /* yacc.c:1646  */
     {   p = popProc();
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
@@ -1937,7 +1937,7 @@ yyreduce:
     break;
 
   case 99:
-#line 448 "compilador.y" /* yacc.c:1646  */
+#line 442 "compilador.y" /* yacc.c:1646  */
     {   p = buscaSimb(tabela,token2);  debug(token2);
                     if ( p == NULL ) erro(PN_DECL);
                     else if ( p->cat != CFUNC ) erro(FN_DECL);
@@ -1950,7 +1950,7 @@ yyreduce:
     break;
 
   case 100:
-#line 457 "compilador.y" /* yacc.c:1646  */
+#line 451 "compilador.y" /* yacc.c:1646  */
     {   p = popProc();
                     num_params = popInt(&nparams);
                     if (num_params < p->num_params)
@@ -1961,31 +1961,31 @@ yyreduce:
     break;
 
   case 104:
-#line 470 "compilador.y" /* yacc.c:1646  */
+#line 464 "compilador.y" /* yacc.c:1646  */
     {flag_var = 0;}
 #line 1967 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 470 "compilador.y" /* yacc.c:1646  */
+#line 464 "compilador.y" /* yacc.c:1646  */
     { popInt(&tipos); }
 #line 1973 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 471 "compilador.y" /* yacc.c:1646  */
+#line 465 "compilador.y" /* yacc.c:1646  */
     {flag_var = 0;}
 #line 1979 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 471 "compilador.y" /* yacc.c:1646  */
+#line 465 "compilador.y" /* yacc.c:1646  */
     { popInt(&tipos); }
 #line 1985 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 474 "compilador.y" /* yacc.c:1646  */
+#line 468 "compilador.y" /* yacc.c:1646  */
     {  p = popProc();
                         num_params = popInt(&nparams);
                         if(p->params[num_params++].pass == PREF && !flag_var)
@@ -1993,13 +1993,13 @@ yyreduce:
                         flag_var=0;
                         // Caso seja por valor, nao precisa fazer nada
                         // porque a expressao ja teve resultado empilhado
-                        pushProc(p);  
+                        pushProc(p);
                         pushInt(&nparams,num_params);}
 #line 1999 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 493 "compilador.y" /* yacc.c:1646  */
+#line 487 "compilador.y" /* yacc.c:1646  */
     {   popInt(&tipos); geraCodigo(NULL,"LEIT");
             if(s->cat == CVAR)
                 armzCodigo(s);
@@ -2009,38 +2009,38 @@ yyreduce:
     break;
 
   case 113:
-#line 501 "compilador.y" /* yacc.c:1646  */
+#line 495 "compilador.y" /* yacc.c:1646  */
     { popInt(&tipos); geraCodigo(NULL,"IMPR");}
 #line 2015 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 505 "compilador.y" /* yacc.c:1646  */
+#line 499 "compilador.y" /* yacc.c:1646  */
     { argCodigo("CRCT ",(int)'\n');
           argCodigo("IMPS ",1);}
 #line 2022 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 509 "compilador.y" /* yacc.c:1646  */
+#line 503 "compilador.y" /* yacc.c:1646  */
     {popInt(&tipos); geraCodigo(NULL,"IMPI");}
 #line 2028 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 512 "compilador.y" /* yacc.c:1646  */
+#line 506 "compilador.y" /* yacc.c:1646  */
     {popInt(&tipos); geraCodigo(NULL,"IMPI");}
 #line 2034 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 515 "compilador.y" /* yacc.c:1646  */
+#line 509 "compilador.y" /* yacc.c:1646  */
     {len = 0;}
 #line 2040 "compilador.tab.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 516 "compilador.y" /* yacc.c:1646  */
+#line 510 "compilador.y" /* yacc.c:1646  */
     { for(i=0; i < len; i++){
               j = popInt(&string);
               argCodigo("CRCT ",j);
@@ -2050,7 +2050,7 @@ yyreduce:
     break;
 
   case 121:
-#line 525 "compilador.y" /* yacc.c:1646  */
+#line 519 "compilador.y" /* yacc.c:1646  */
     { for(i=0; i < strlen(texto); i++){
                     len++;
                     if(texto[i]=='\\' && i < strlen(texto)-1){
@@ -2309,7 +2309,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 554 "compilador.y" /* yacc.c:1906  */
+#line 548 "compilador.y" /* yacc.c:1906  */
 
 
 main (int argc, char** argv) {
@@ -2326,7 +2326,7 @@ main (int argc, char** argv) {
       printf("Usage:\n\t$ %s <file.pas>\n", argv[0]);
       return(100);
    }
-    
+
     strcpy(codigo,argv[1]);
 
    yyin=fp;

@@ -6,7 +6,14 @@
 
 
 void dumpInt(PilhaInt *topo){
-
+    printf("\n# Lista de ints:\n");
+    while(topo != NULL){
+        printf("+\t%d\t+\n",topo->val);
+        fflush(stdout);
+        topo = topo->abaixo;
+    }
+    printf("+++++++++++++++++\n");
+    fflush(stdout);
     return;
 }
 
@@ -15,8 +22,8 @@ void pushInt(PilhaInt **p, int val){
     topo = malloc(sizeof(PilhaInt));
     topo->val = val;
     topo->abaixo = (*p);
-    if(topo->abaixo == NULL)
     *p = topo;
+    dumpInt(*p);
     return;
 }
 
@@ -27,6 +34,7 @@ int popInt(PilhaInt **p){
     val = (*p)->val;
     *p = (*p)->abaixo;
     free(tmp);
+    dumpInt(*p);
     return val;
 }
 
