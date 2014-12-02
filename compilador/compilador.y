@@ -1,8 +1,8 @@
 /*
  *  Thiago Roscia Cerdeiro de Lima
  *  GRR20105251
- *  trcl10@inf
- *
+ *  Paulo Marcos Dores Junior
+ *  GRR20114281
  */
 
 %{
@@ -112,12 +112,17 @@ void updateRotulo(int r){
 %%
 
 /* Inicializa variaveis globais do compilador */
-programa:   {   rotulo = 0; nl=1; flag_var=0;
+programa:   {   rotulo = 0; nl=1; flag_var=0; pushInt(&declarou,0);
                 tabela = NULL; tipos = NULL; string = NULL; rotulos = NULL;
                 geraCodigo(NULL, "INPP");}
                 PROGRAM IDENT
                 ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
-                bloco PONTO {   argCodigo("DMEM ",popInt(&nvars));
+                bloco PONTO {  
+		    if(popInt(&declarou)){
+			i = popInt(&nvars);
+printf("@@@\npop nvars %d, nl %d\n@@@\n",i,nivel_lexico); fflush(stdout);
+                    argCodigo("DMEM ",i); 
+			}
                                 geraCodigo (NULL, "PARA"); }
 ;
 
@@ -132,7 +137,8 @@ bloco:          parte_decl_labels parte_declara_vars
 parte_declara_vars:     VAR { desloc=0; }
                         declara_vars
                     {   argCodigo("AMEM ",desloc);
-                        pushInt(&nvars,desloc);}
+			declarou->val = 1;
+                        pushInt(&nvars,desloc); printf("@@@\npush nvars %d, nl %d\n@@@\n",desloc,nivel_lexico); fflush(stdout);}
                     |
 ;
 
@@ -342,7 +348,8 @@ decl_proc:      PROCEDURE IDENT {   updateRotulo(rotulo);
                                     p->cat = CPROC;
                                     p->label = rotulo++;
                                     tabela = pushSimb(tabela,p);
-                                    argCodigo("ENPR ",nivel_lexico);}
+                                    argCodigo("ENPR ",nivel_lexico);
+				    pushInt(&declarou,0);}
                 params_formais  PONTO_E_VIRGULA
                 bloco
                 {   s = tabela;
@@ -350,7 +357,11 @@ decl_proc:      PROCEDURE IDENT {   updateRotulo(rotulo);
                     while(s->cat != CPROC || s->nivel > nivel_lexico)
                         s = s->abaixo;
                     tabela = s;
-                    argCodigo("DMEM ",popInt(&nvars));
+		    if(popInt(&declarou)){
+			i = popInt(&nvars);
+printf("@@@\npop nvars %d, nl %d\n@@@\n",i,nivel_lexico); fflush(stdout);
+                    argCodigo("DMEM ",i);  
+			}
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 ;
 
@@ -361,7 +372,8 @@ decl_func:      FUNCTION IDENT {    updateRotulo(rotulo);
                                     p->cat = CFUNC;
                                     p->label = rotulo++;
                                     tabela = pushSimb(tabela,p);
-                                    argCodigo("ENPR ",nivel_lexico);}
+                                    argCodigo("ENPR ",nivel_lexico);
+				    pushInt(&declarou,0);}
                 params_formais  DOIS_PONTOS
                 tipo {
                     // Considera a "variável" p como um parâmetro
@@ -376,7 +388,11 @@ decl_func:      FUNCTION IDENT {    updateRotulo(rotulo);
                     while(s->cat != CFUNC || s->nivel > nivel_lexico)
                         s = s->abaixo;
                     tabela = s;
-                    argCodigo("DMEM ",popInt(&nvars));
+		    if(popInt(&declarou)){
+			i = popInt(&nvars);
+printf("@@@\npop nvars %d, nl %d\n@@@\n",i,nivel_lexico); fflush(stdout);
+                    argCodigo("DMEM ",i); 
+			}
                     argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
 ;
 
@@ -483,25 +499,35 @@ io:         read
         |   writeln
 ;
 
-read:   READ ABRE_PARENTESES var FECHA_PARENTESES
-        {   popInt(&tipos); geraCodigo(NULL,"LEIT");
-            if(s->cat == CVAR)
-                armzCodigo(s);
-            else
-                erro(ATRIB); }
+read:   READ ABRE_PARENTESES readlist FECHA_PARENTESES
 ;
 
-write:  WRITE ABRE_PARENTESES expr FECHA_PARENTESES
-        { popInt(&tipos); geraCodigo(NULL,"IMPR");}
+readlist:	readlist VIRGULA var 	{   popInt(&tipos); geraCodigo(NULL,"LEIT");
+				    if(s->cat == CVAR)
+					armzCodigo(s);
+				    else
+					erro(ATRIB); }
+		| var   {   popInt(&tipos); geraCodigo(NULL,"LEIT");
+			    if(s->cat == CVAR)
+				armzCodigo(s);
+			    else
+				erro(ATRIB); }
+
+
+write:  WRITE ABRE_PARENTESES writelist FECHA_PARENTESES
 ;
 
-writeln:  WRITELN ABRE_PARENTESES writelist FECHA_PARENTESES
+writelist:   writelist VIRGULA expr { popInt(&tipos); geraCodigo(NULL,"IMPR");}
+            | expr { popInt(&tipos); geraCodigo(NULL,"IMPR");}
+;
+
+writeln:  WRITELN ABRE_PARENTESES writelnlist FECHA_PARENTESES
         { argCodigo("CRCT ",(int)'\n');
           argCodigo("IMPS ",1);}
 ;
 
-writelist:   writelist VIRGULA expr {popInt(&tipos); geraCodigo(NULL,"IMPI");}
-            | writelist VIRGULA string
+writelnlist:   writelnlist VIRGULA expr {popInt(&tipos); geraCodigo(NULL,"IMPI");}
+            | writelnlist VIRGULA string
             | string
             | expr {popInt(&tipos); geraCodigo(NULL,"IMPI");}
 ;

@@ -85,5 +85,5 @@ void erro(int);
 
 
 Simbolo *tabela, *s, *p, *esq;
-PilhaInt *tipos, *rotulos, *string, *nvars, *nparams;
+PilhaInt *tipos, *rotulos, *string, *nvars, *nparams, *declarou;
 PilhaProc *procs;
