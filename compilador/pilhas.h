@@ -70,8 +70,6 @@ typedef struct PilhaInt{
 } PilhaInt;
 
 
-
-
 /* Simbolos */
 Simbolo* pushSimb(Simbolo *, Simbolo *);
 Simbolo* rmSimb(Simbolo *, int);

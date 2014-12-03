@@ -23,7 +23,6 @@ void pushInt(PilhaInt **p, int val){
     topo->val = val;
     topo->abaixo = (*p);
     *p = topo;
-    //dumpInt(*p);
     return;
 }
 
@@ -34,10 +33,10 @@ int popInt(PilhaInt **p){
     val = (*p)->val;
     *p = (*p)->abaixo;
     free(tmp);
-    //dumpInt(*p);
     return val;
 }
 
+/* Desempilha os dois valores do topo da pilha de tipos e compara com o tipo do operador */
 void cmpTipo(int operador){
     int a,b;
     a = popInt(&tipos);
@@ -72,11 +71,9 @@ Simbolo* rmSimb(Simbolo *pilha, int n){
 
 Simbolo* buscaSimb(Simbolo *pilha, char *ident){
     Simbolo *atual;
-    //debug("buscando"); debug(ident);
     if(pilha == NULL) return NULL;
     atual = pilha;
     do{
-            //printf("@ %s == %s?\n",atual->ident,ident);
         if(!strcmp(atual->ident,ident)){
             return atual;
         }
