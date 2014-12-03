@@ -181,7 +181,8 @@ void updateRotulo(int r){
     if     : if_then cond_else { rotCodigo(popInt(&rotulos)); }
     ;
 
-    if_then     :   IF expr { desvCodigo("DSVF",rotulo++); pushInt(&rotulos,rotulo++);}
+    if_then     :   IF expr { pushInt(&tipos,TBOOL); cmpTipo(TBOOL);
+										desvCodigo("DSVF",rotulo++); pushInt(&rotulos,rotulo++);}
                     THEN comando { desvCodigo("DSVS",rotulos->val);
                                    rotCodigo(rotulos->val-1);}
     ;
@@ -194,7 +195,8 @@ void updateRotulo(int r){
 
 /* WHILE */
     while:  WHILE { rotCodigo(rotulo++); }
-            expr { desvCodigo("DSVF",rotulo); pushInt(&rotulos,rotulo++);}
+            expr { 	pushInt(&tipos,TBOOL); cmpTipo(TBOOL);
+							desvCodigo("DSVF",rotulo); pushInt(&rotulos,rotulo++);}
             DO comando { desvCodigo("DSVS",rotulos->val - 1);
                                     rotCodigo(popInt(&rotulos));}
     ;
@@ -209,7 +211,7 @@ void updateRotulo(int r){
                 | comando_composto
     ;
 
-    comando_sem_rotulo : atrib {printf("atribuiu\n\n");fflush(stdout);}
+    comando_sem_rotulo : atrib {}
                        | while
                        | if
                        | comando_goto
@@ -257,8 +259,8 @@ void updateRotulo(int r){
     ;
 
 /* ATRIBUIÇÃO */
-    atrib:      recipiente ATRIBUICAO exprs {   cmpTipo(TVOID);         // Compara tipo do recipiente e expressão
-                                                armzCodigo(esq);}       // TVOID usado quando o operador não tem tipo
+    atrib:      recipiente ATRIBUICAO expr {   cmpTipo(TVOID);         // Compara tipo do recipiente e expressão
+                                                armzCodigo(popProc(&recipientes));}       // TVOID usado quando o operador não tem tipo
     ;
 
     recipiente:   IDENT {   s = buscaSimb(tabela,token2);               // Busca token  na tabela de símbolos
@@ -268,7 +270,7 @@ void updateRotulo(int r){
                             } else if ( s->cat == CFUNC ){
                                 pushInt(&tipos,p->params[p->num_params].tipo); // Empilha o tipo da função
                             } else erro(ATRIB);
-                            esq = s;
+                            pushProc(&recipientes,s);
                           }
     ;
 
@@ -280,7 +282,7 @@ void updateRotulo(int r){
             |   exprs MENOR exprs   {   cmpTipo(TINT);  pushInt(&tipos,TBOOL);  // Operadores de comparação esperam
                                         geraCodigo(NULL,"CMME");}               // operandos tipo integer, mas
             |   exprs MAIOR exprs   {   cmpTipo(TINT);  pushInt(&tipos,TBOOL);  // retornam tipo boolean.
-                                        geraCodigo(NULL,"CMMA");}
+                                        geraCodigo(NULL,"CMMA"); }
             |   exprs MENOR_IGUAL exprs   { cmpTipo(TINT); pushInt(&tipos,TBOOL);
                                             geraCodigo(NULL,"CMEG");}
             |   exprs MAIOR_IGUAL exprs   { cmpTipo(TINT); pushInt(&tipos,TBOOL);
@@ -379,8 +381,9 @@ void updateRotulo(int r){
                         while(s->cat != CFUNC || s->nivel > nivel_lexico)
                             s = s->abaixo;
                         tabela = s;
-                        if(popInt(&declarou))
+                        if(popInt(&declarou)){
                                 argCodigo("DMEM ",popInt(&nvars));
+								}
                         argsCodigo("RTPR ",nivel_lexico--,p->num_params);}
     ;
 
@@ -432,10 +435,10 @@ void updateRotulo(int r){
     ch_proc: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                         if ( p == NULL ) erro(PN_DECL);
                         else if ( p->cat != CPROC ) erro(PN_DECL);
-                        pushProc(p);
+                        pushProc(&procs,p);
                         pushInt(&nparams,0);}
              passa_ou_nao
-                    {   p = popProc();
+                    {   p = popProc(&procs);
                         num_params = popInt(&nparams);
                         if (num_params < p->num_params)
                             erro(NPARAM);
@@ -446,13 +449,13 @@ void updateRotulo(int r){
     ch_func: IDENT  {   p = buscaSimb(tabela,token2);  debug(token2);
                         if ( p == NULL ) erro(PN_DECL);
                         else if ( p->cat != CFUNC ) erro(FN_DECL);
-                        pushProc(p);
+                        pushProc(&procs,p);
                         pushInt(&nparams,0);
                         // Abre espaço para valor de retorno
                         geraCodigo(NULL,"AMEM 1");
                         pushInt(&tipos,p->params[0].tipo);}
              passa_ou_nao
-                    {   p = popProc();
+                    {   p = popProc(&procs);
                         num_params = popInt(&nparams);
                         if (num_params < p->num_params)
                             erro(NPARAM);
@@ -469,7 +472,7 @@ void updateRotulo(int r){
                 |   {flag_var = 0;} param { popInt(&tipos); }
     ;
 
-    param   :   expr     {  p = popProc();
+    param   :   expr     {  p = popProc(&procs);
                             num_params = popInt(&nparams);
                             // Se vai usar por referência, param tem de ser uma variável
                             if(p->params[num_params++].pass == PREF && !flag_var)
@@ -477,7 +480,7 @@ void updateRotulo(int r){
                             flag_var=0;
                             // Caso seja por valor, nao precisa fazer nada
                             // porque a expressao ja teve resultado empilhado
-                            pushProc(p);
+                            pushProc(&procs,p);
                             pushInt(&nparams,num_params);}
     ;
 
@@ -493,9 +496,9 @@ void updateRotulo(int r){
 
     readlist:	readlist VIRGULA var 	{   popInt(&tipos); geraCodigo(NULL,"LEIT");
                                             if(s->cat == CVAR)
-                                            armzCodigo(s);
+                                            	armzCodigo(s);
                                             else
-                                            erro(ATRIB); }
+                                            	erro(ATRIB); }
             | var   {   popInt(&tipos); geraCodigo(NULL,"LEIT");
                         if(s->cat == CVAR)
                         armzCodigo(s);

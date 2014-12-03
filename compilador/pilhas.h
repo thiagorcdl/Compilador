@@ -14,7 +14,7 @@
 
 
 /* Tipos */
-#define TVOID   0
+#define TVOID   0 		//para tipo
 #define TBOOL   1
 #define TINT    2
 #define TREAL   3
@@ -83,12 +83,12 @@ int popInt(PilhaInt **);
 void cmpTipo(int);
 
 /* Procedures e functions */
-void pushProc(Simbolo* p);
-Simbolo* popProc();
+void pushProc(PilhaProc**, Simbolo* );
+Simbolo* popProc(PilhaProc**);
 
 void erro(int);
 
 
 Simbolo *tabela, *s, *p, *esq;
 PilhaInt *tipos, *rotulos, *string, *nvars, *nparams, *declarou;
-PilhaProc *procs;
+PilhaProc *procs, *recipientes;

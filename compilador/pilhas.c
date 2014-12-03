@@ -41,6 +41,7 @@ void cmpTipo(int operador){
     int a,b;
     a = popInt(&tipos);
     b = popInt(&tipos);
+	//printf("\n\nComparando tipos %d %d\n\n",a,b);fflush(stdout);
     if ((a != b) || (a != operador && operador))
         erro(INCOMPT);
     return;
@@ -93,21 +94,21 @@ Simbolo *criaSimb(char *ident){
     return s;
 }
 
-void pushProc(Simbolo* p){
-    PilhaProc *topo;
+void pushProc(PilhaProc **pilha, Simbolo* p){
+	 PilhaProc *topo;
     topo = malloc(sizeof(PilhaProc));
     topo->proc = p;
-    topo->abaixo = procs;
-    procs = topo;
+    topo->abaixo = (*pilha);
+    *pilha = topo;
     return;
 }
 
-Simbolo* popProc(){
+Simbolo* popProc(PilhaProc **pilha){
     PilhaProc *tmp;
     Simbolo* proc;
-    tmp = procs;
+    tmp = (*pilha);
     proc = tmp->proc;
-    procs = procs->abaixo;
+    *pilha = (*pilha)->abaixo;
     free(tmp);
     return proc;
 }
