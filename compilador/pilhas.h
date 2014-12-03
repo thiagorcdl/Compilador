@@ -29,12 +29,14 @@ typedef enum enum_cat {
         CVAR, CPROC, CFUNC, CPARAM, CLABEL
 }enum_cat;
 
+/* Var é usado tanto para variáveis, quanto para parâmetros */
 typedef struct Var{
     int tipo;
     enum_pass pass;
     int desloc;
 } Var;
 
+/* Tabela de símbolos é implementada como uma pilha */
 typedef struct Simbolo{
     char ident[TAM_TOKEN];
     enum_cat cat;
@@ -43,7 +45,8 @@ typedef struct Simbolo{
     union{
         // Vars e params usam:
         Var var;
-        // Procedures usam:
+
+        // Procedures e functions usam:
         struct{
             int label;
             int num_params;
@@ -53,16 +56,20 @@ typedef struct Simbolo{
     struct Simbolo *abaixo;
 } Simbolo;
 
+/* Pilha de procedures é usada para ter controle dos parâmetros*/
+typedef struct PilhaProc{
+    Simbolo *proc;
+    struct PilhaProc *abaixo;
+} PilhaProc;
+
+
+/* Pilha de inteiro é usara para controlas diversas coisas*/
 typedef struct PilhaInt{
     int val;
     struct PilhaInt *abaixo;
 } PilhaInt;
 
 
-typedef struct PilhaProc{
-    Simbolo *proc;
-    struct PilhaProc *abaixo;
-} PilhaProc;
 
 
 /* Simbolos */
